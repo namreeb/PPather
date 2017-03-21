@@ -48,14 +48,12 @@ namespace Pather.Activities
 		{
 			Helpers.Mount.Dismount();
 
-			ppather.Face(node);
 			int n = 3;
 			// Todo, special for mines
 			if (node.IsMineral)
 				n = 6;
 			do
 			{
-				ppather.Face(node);
 				Functions.Interact(node);
 				if (GContext.Main.Me.IsInCombat)
 					return false;

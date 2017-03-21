@@ -70,11 +70,7 @@ namespace Pather.Activities
 				return true;
 
 			if (pathObject != null)
-			{
-				if (pathObject.isNode() || pathObject.isUnit())
-					ppather.Face(pathObject);
 				Functions.Interact(pathObject);
-			}
 
 			// For quest pickup on some items
 			while (GPlayerSelf.Me.IsCasting)

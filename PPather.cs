@@ -41,7 +41,7 @@ namespace Pather
 	{
 		public const double PI = Math.PI;
 
-		public const string VERSION = "1.0.4";
+		public const string VERSION = "1.0.4c";
 
 		public static Random random = new Random();
 		public static Mover mover;
@@ -1673,93 +1673,96 @@ Venomtail Scorpid died.
 							nothingToDoTimer.Reset();
 						}
 
-						if (newActivity.task.GetType().ToString() == "Pather.Tasks.LoadTask")
+						if (newActivity != null)
 						{
-							PPather.WriteLine("Queueing the old task tree");
-							taskQueue.Push(rootTask);
-							activityQueue.Push(activity);
-							//PPather.WriteLine("Still alive!");
-							if (activity != null)
+							if (newActivity.task.GetType().ToString() == "Pather.Tasks.LoadTask")
 							{
-								bool done = false;
-								int wait = 0;
-
-								do
+								PPather.WriteLine("Queueing the old task tree");
+								taskQueue.Push(rootTask);
+								activityQueue.Push(activity);
+								//PPather.WriteLine("Still alive!");
+								if (activity != null)
 								{
-									done = activity.Do();
-									wait++;
-									Thread.Sleep(10);
-								} while (!done && (wait > 100));
+									bool done = false;
+									int wait = 0;
 
-								if (!done)
-									activity.Stop();
-
-								Task tr = activity.task;
-								while (tr != null)
-								{
-									tr.isActive = false;
-									tr = tr.parent;
-								}
-								activity = null;
-							}
-							reader = null;
-							astRoot = null;
-
-							string loadfile = Functions.GetTaskFilePath() + ((LoadTask)newActivity.task).File;
-							PPather.WriteLine("Loading file - " + loadfile);
-							if (File.Exists(loadfile))
-								reader = File.OpenText(loadfile);
-							else
-								PPather.WriteLine("!Warning:File could not be loaded - " + loadfile);
-							if (reader != null)
-							{
-								Preprocessor pproc = new Preprocessor(reader);
-								TaskParser t = new TaskParser(new StreamReader(pproc.ProcessedStream));
-								astRoot = t.ParseTask(null);
-								reader.Close();
-								root = null;
-								root = new RootNode();
-								root.AddTask(astRoot);
-								root.BindSymbols(); // Just to make it a tad faster
-
-								rootTask = null;
-								rootTask = CreateTaskFromNode(root, null);
-								Helpers.TaskInfo.Root = rootTask; // Desired?
-								form.CreateTreeFromTasks(rootTask);
-								activity = null;
-								newActivity.task.Restart();
-								newActivity = null;
-
-								if (rootTask == null)
-									PPather.WriteLine("!Error:Load: No root task!");
-								else
-								{
-									PPather.WriteLine("Load: Load has been successful");
-									rootTask.Restart();
-                                    if (rootTask.WantToDoSomething())
+									do
 									{
-										newActivity = rootTask.GetActivity();
-										nothingToDoTimer.Reset();
+										done = activity.Do();
+										wait++;
+										Thread.Sleep(10);
+									} while (!done && (wait > 100));
+
+									if (!done)
+										activity.Stop();
+
+									Task tr = activity.task;
+									while (tr != null)
+									{
+										tr.isActive = false;
+										tr = tr.parent;
+									}
+									activity = null;
+								}
+								reader = null;
+								astRoot = null;
+
+								string loadfile = Functions.GetTaskFilePath() + ((LoadTask)newActivity.task).File;
+								PPather.WriteLine("Loading file - " + loadfile);
+								if (File.Exists(loadfile))
+									reader = File.OpenText(loadfile);
+								else
+									PPather.WriteLine("!Warning:File could not be loaded - " + loadfile);
+								if (reader != null)
+								{
+									Preprocessor pproc = new Preprocessor(reader);
+									TaskParser t = new TaskParser(new StreamReader(pproc.ProcessedStream));
+									astRoot = t.ParseTask(null);
+									reader.Close();
+									root = null;
+									root = new RootNode();
+									root.AddTask(astRoot);
+									root.BindSymbols(); // Just to make it a tad faster
+
+									rootTask = null;
+									rootTask = CreateTaskFromNode(root, null);
+									Helpers.TaskInfo.Root = rootTask; // Desired?
+									form.CreateTreeFromTasks(rootTask);
+									activity = null;
+									newActivity.task.Restart();
+									newActivity = null;
+
+									if (rootTask == null)
+										PPather.WriteLine("!Error:Load: No root task!");
+									else
+									{
+										PPather.WriteLine("Load: Load has been successful");
+										rootTask.Restart();
+										if (rootTask.WantToDoSomething())
+										{
+											newActivity = rootTask.GetActivity();
+											nothingToDoTimer.Reset();
+										}
 									}
 								}
 							}
-						}
 
-						if (newActivity.task.GetType().ToString() == "Pather.Tasks.UnloadTask")
-						{
-							if (activity != null)
+							if (newActivity.task.GetType().ToString() == "Pather.Tasks.UnloadTask")
 							{
-								activity.Stop();
-								activity = null;
-							}
-							rootTask = taskQueue.Pop();
-							activity = activityQueue.Pop();
-							newActivity.task.Restart();
-							newActivity = null;
-                            if (rootTask.WantToDoSomething())
-							{
-								newActivity = rootTask.GetActivity();
-								nothingToDoTimer.Reset();
+								if (activity != null)
+								{
+									activity.Stop();
+									activity = null;
+								}
+								rootTask = taskQueue.Pop();
+								activity = activityQueue.Pop();
+								newActivity.task.Restart();
+								newActivity = null;
+								if (rootTask.WantToDoSomething())
+								{
+									newActivity = rootTask.GetActivity();
+									nothingToDoTimer.Reset();
+								}
 							}
 						}
 

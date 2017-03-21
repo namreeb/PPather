@@ -48,8 +48,6 @@ namespace Pather.Activities
 
 		public override bool Do()
 		{
-			ppather.Face(npc);
-
 			int option = 0;
 			int maxtries = 3;
 

@@ -49,8 +49,6 @@ namespace Pather.Activities
 
 		public override bool Do()
 		{
-			ppather.Face(unit);
-
 			Functions.Interact(unit);
 			Thread.Sleep(2000);
 

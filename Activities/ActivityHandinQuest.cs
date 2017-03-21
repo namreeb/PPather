@@ -63,7 +63,6 @@ namespace Pather.Activities
 			if (!ppather.IsQuestGoalDone(QuestID))
 				return true; // Quest isn't ready to handin
 
-			ppather.Face(pathObject);
 			Functions.Interact(pathObject);
 
 			while (GPlayerSelf.Me.IsCasting)

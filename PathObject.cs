@@ -66,38 +66,6 @@ namespace Pather
             }
         }
 
-        public void Face(double tolerance)
-        {
-            if (isUnit())
-            {
-                unit.Face(tolerance);
-            }
-            else if (isNode())
-            {
-                node.Face();
-            }
-            else
-            {
-                //item, can't really face it
-            }
-        }
-
-        public void Face()
-        {
-            if (isUnit())
-            {
-                unit.Face();
-            }
-            else if (isNode())
-            {
-                node.Face();
-            }
-            else
-            {
-                //item, can't really face it
-            }
-        }
-
         public void Interact()
         {
             if (isUnit())

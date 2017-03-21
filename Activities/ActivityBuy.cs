@@ -75,8 +75,6 @@ namespace Pather.Activities
 		{
 			Helpers.Mount.Dismount();
 
-			ppather.Face(npc);
-
 			while (true)
 			{
 				Functions.Interact(npc);

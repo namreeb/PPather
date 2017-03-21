@@ -48,7 +48,6 @@ namespace Pather.Activities
 
 		public override bool Do()
 		{
-			ppather.Face(monster);
 			if (monster.IsLootable)
 			{
 				Functions.Interact(monster);

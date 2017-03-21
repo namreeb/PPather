@@ -71,7 +71,6 @@ namespace Pather.Activities
 
 		public override bool Do()
 		{
-			ppather.Face(npc);
 			Functions.Interact(npc);
 			Thread.Sleep(2000);
 			//PPather.WriteLine("UI.TaxiFrame.IsVisible:" + (TaxiFrame.IsVisible() ? "yes" : "no"));
