@@ -1,0 +1,246 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FEA6B573-E6EB-45A7-8DEB-EC84410BB9C0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Pather</RootNamespace>
+    <AssemblyName>PPather</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="GRefs, Version=0.1.5.8, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\GRefs.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Activities\Activity.cs" />
+    <Compile Include="Activities\ActivityApproach.cs" />
+    <Compile Include="Activities\ActivityAttack.cs" />
+    <Compile Include="Activities\ActivityAvoidPlayers.cs" />
+    <Compile Include="Activities\ActivityBuy.cs" />
+    <Compile Include="Activities\ActivityHandinQuest.cs" />
+    <Compile Include="Activities\ActivityLearnFP.cs" />
+    <Compile Include="Activities\ActivityLoot.cs" />
+    <Compile Include="Activities\ActivityMailItems.cs" />
+    <Compile Include="Activities\ActivityPickup.cs" />
+    <Compile Include="Activities\ActivityPickupQuest.cs" />
+    <Compile Include="Activities\ActivityQueue.cs" />
+    <Compile Include="Activities\ActivityRest.cs" />
+    <Compile Include="Activities\ActivitySellAndRepair.cs" />
+    <Compile Include="Activities\ActivitySetHome.cs" />
+    <Compile Include="Activities\ActivityTalents.cs" />
+    <Compile Include="Activities\ActivityTaxi.cs" />
+    <Compile Include="Activities\ActivityTrain.cs" />
+    <Compile Include="Activities\ActivityWait.cs" />
+    <Compile Include="Activities\ActivityWalkTo.cs" />
+    <Compile Include="Functions.cs" />
+    <Compile Include="Graph\GraphChunk.cs" />
+    <Compile Include="Graph\ILocationHeuristics.cs" />
+    <Compile Include="Graph\Location.cs" />
+    <Compile Include="Graph\Path.cs" />
+    <Compile Include="Graph\PathGraph.cs" />
+    <Compile Include="Graph\Spot.cs" />
+    <Compile Include="Graph\SpotData.cs" />
+    <Compile Include="Helpers\Detection.cs" />
+    <Compile Include="Helpers\Limits.cs" />
+    <Compile Include="Helpers\Target.cs" />
+    <Compile Include="Helpers\TaskInfo.cs" />
+    <Compile Include="Helpers\UI\BagManager.cs" />
+    <Compile Include="Helpers\UI\BattlefieldFrame.cs" />
+    <Compile Include="Helpers\UI\DropDownListFrame.cs" />
+    <Compile Include="Helpers\UI\GossipFrame.cs" />
+    <Compile Include="Helpers\UI\MacrolessZoneInfo.cs" />
+    <Compile Include="Helpers\UI\MailFrame.cs" />
+    <Compile Include="Helpers\UI\MerchantFrame.cs" />
+    <Compile Include="Helpers\UI\MiniMapBattlefieldFrame.cs" />
+    <Compile Include="Helpers\UI\Popup.cs" />
+    <Compile Include="Helpers\UI\QuestFrame.cs" />
+    <Compile Include="Helpers\UI\SendMailFrame.cs" />
+    <Compile Include="Helpers\UI\TalentFrame.cs" />
+    <Compile Include="Helpers\UI\TaxiFrame.cs" />
+    <Compile Include="Helpers\UI\TrainerFrame.cs" />
+    <Compile Include="NPCDatabase.cs" />
+    <Compile Include="Parser\ArithBinExpression.cs" />
+    <Compile Include="Parser\ArithBinExpressions.cs" />
+    <Compile Include="Parser\AssocReadExpression.cs" />
+    <Compile Include="Parser\ASTNode.cs" />
+    <Compile Include="Parser\BinExpression.cs" />
+    <Compile Include="Parser\BoolBinExpression.cs" />
+    <Compile Include="Parser\BoolBinExpressions.cs" />
+    <Compile Include="Parser\CmpExpression.cs" />
+    <Compile Include="Parser\CmpExpressions.cs" />
+    <Compile Include="Parser\CollectionExpression.cs" />
+    <Compile Include="Parser\FcallExpression.cs" />
+    <Compile Include="Parser\Fcalls.cs" />
+    <Compile Include="Parser\FuncDefinition.cs" />
+    <Compile Include="Parser\IDExpression.cs" />
+    <Compile Include="Parser\LiteralExpression.cs" />
+    <Compile Include="Parser\NegExpression.cs" />
+    <Compile Include="Parser\NodeDefinition.cs" />
+    <Compile Include="Parser\NodeExpression.cs" />
+    <Compile Include="Parser\NodeTask.cs" />
+    <Compile Include="Parser\PredefinedVars.cs" />
+    <Compile Include="Parser\Preprocessor.cs" />
+    <Compile Include="Parser\RootNode.cs" />
+    <Compile Include="Parser\RootTask.cs" />
+    <Compile Include="Parser\TaskParser.cs" />
+    <Compile Include="Parser\Token.cs" />
+    <Compile Include="Parser\Tokenizer.cs" />
+    <Compile Include="PatherForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PathObject.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.cs" />
+    <Compile Include="Parser\Value.cs" />
+    <Compile Include="Tasks\AssistTask.cs" />
+    <Compile Include="Tasks\AvoidPlayersTask.cs" />
+    <Compile Include="Tasks\GroupFollowTask.cs" />
+    <Compile Include="Tasks\LearnFPTask.cs" />
+    <Compile Include="Tasks\LogTask.cs" />
+    <Compile Include="Tasks\PlaceSpellTask.cs" />
+    <Compile Include="Tasks\QuestInteractTask.cs" />
+    <Compile Include="Tasks\SetHomeTask.cs" />
+    <Compile Include="Tasks\StringTask.cs" />
+    <Compile Include="Helpers\Buff.cs" />
+    <Compile Include="Helpers\Inventory.cs" />
+    <Compile Include="Helpers\Mount.cs" />
+    <Compile Include="Moving.cs" />
+    <Compile Include="PPather.cs">
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tasks\ActivityFreeTask.cs" />
+    <Compile Include="Tasks\BGQueueTask.cs" />
+    <Compile Include="Tasks\BuyTask.cs" />
+    <Compile Include="Tasks\CastSpellTask.cs" />
+    <Compile Include="Tasks\DangerTask.cs" />
+    <Compile Include="Tasks\DefendTask.cs" />
+    <Compile Include="Tasks\HarvestTask.cs" />
+    <Compile Include="Tasks\HotspotTask.cs" />
+    <Compile Include="Tasks\IfTask.cs" />
+    <Compile Include="Tasks\LootTask.cs" />
+    <Compile Include="Tasks\MailTask.cs" />
+    <Compile Include="Tasks\NPCInteractTask.cs" />
+    <Compile Include="Tasks\OneshotTask.cs" />
+    <Compile Include="Tasks\ParserTask.cs" />
+    <Compile Include="Tasks\ParTask.cs" />
+    <Compile Include="Tasks\PullTask.cs" />
+    <Compile Include="Tasks\QuestGoalTask.cs" />
+    <Compile Include="Tasks\QuestHandinTask.cs" />
+    <Compile Include="Tasks\QuestPickupTask.cs" />
+    <Compile Include="Tasks\RestTask.cs" />
+    <Compile Include="Tasks\RunnerTask.cs" />
+    <Compile Include="Tasks\SeqTask.cs" />
+    <Compile Include="Tasks\TalentTask.cs" />
+    <Compile Include="Tasks\Task.cs" />
+    <Compile Include="Tasks\TaxiTask.cs" />
+    <Compile Include="Tasks\TrainTask.cs" />
+    <Compile Include="Tasks\UntilTask.cs" />
+    <Compile Include="Tasks\UseItemTask.cs" />
+    <Compile Include="Tasks\VendorTask.cs" />
+    <Compile Include="Tasks\WaitTask.cs" />
+    <Compile Include="Tasks\WalkTask.cs" />
+    <Compile Include="Tasks\WhenTask.cs" />
+    <Compile Include="ToonState.cs" />
+    <Compile Include="Triangles\MPQTriangleSupplier.cs" />
+    <Compile Include="Triangles\StormDll.cs" />
+    <Compile Include="Triangles\Triangles.cs" />
+    <Compile Include="Triangles\Utils.cs" />
+    <Compile Include="Triangles\WmoFile.cs" />
+    <Compile Include="UnitRadar.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PatherForm.resx">
+      <DependentUpon>PatherForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
