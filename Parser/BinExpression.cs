@@ -2,20 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Pather.Parser {
-	public abstract class BinExpresssion : NodeExpression {
+namespace Pather.Parser
+{
+	public abstract class BinExpresssion : NodeExpression
+	{
 		protected NodeExpression left;
 		protected NodeExpression right;
 
 		public BinExpresssion(NodeTask task, NodeExpression left, NodeExpression right)
-			: base(task) {
+			: base(task)
+		{
 			this.left = left;
 			this.right = right;
 		}
 
 		public abstract string OpName();
 
-		public override void dump(int d) {
+		public override void dump(int d)
+		{
 			Console.Write("(");
 			left.dump(d);
 			Console.Write(OpName());
@@ -23,7 +27,8 @@ namespace Pather.Parser {
 			Console.Write(")");
 		}
 
-		public override bool BindSymbols() {
+		public override bool BindSymbols()
+		{
 			return left.BindSymbols() && right.BindSymbols();
 		}
 	}

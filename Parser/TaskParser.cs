@@ -4,25 +4,31 @@ using System.Text;
 
 using Glider.Common.Objects;
 
-namespace Pather.Parser {
-	public class TaskParser {
+namespace Pather.Parser
+{
+	public class TaskParser
+	{
 		Tokenizer tn;
 
-		public TaskParser(System.IO.TextReader reader) {
+		public TaskParser(System.IO.TextReader reader)
+		{
 			tn = new Tokenizer(reader);
 		}
 
-		public void Error(string msg) {
+		public void Error(string msg)
+		{
 			string s = "Line " + tn.line + ": " + msg;
 			PPather.WriteLine("Line " + tn.line + ": " + msg);
 
 			System.Windows.Forms.MessageBox.Show(s, "Error parsing task file", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
 		}
 
-		private bool Expect(Token.Type type, string val) {
+		private bool Expect(Token.Type type, string val)
+		{
 			Token t = tn.Next();
 
-			if (t.type != type || t.val != val) {
+			if (t.type != type || t.val != val)
+			{
 				Error("Expected " + val + " found " + t.val);
 				return false;
 			}
@@ -30,21 +36,25 @@ namespace Pather.Parser {
 			return true;
 		}
 
-		private NodeExpression ParseExpressionP(NodeTask t) {
+		private NodeExpression ParseExpressionP(NodeTask t)
+		{
 			Token next = tn.Peek();
 
-			if (next.type == Token.Type.Literal) {
+			if (next.type == Token.Type.Literal)
+			{
 				// literal expression
 				tn.Next();
 				Token lpar = tn.Peek();
 
-				if (lpar.type == Token.Type.Keyword && lpar.val == "(") {
+				if (lpar.type == Token.Type.Keyword && lpar.val == "(")
+				{
 					//fcall
 
 					List<NodeExpression> exprs = new List<NodeExpression>();
 					Token comma = null;
 
-					do {
+					do
+					{
 						tn.Next(); // eat ( or , 
 						NodeExpression n = ParseExpression(t);
 						exprs.Add(n);
@@ -55,45 +65,58 @@ namespace Pather.Parser {
 
 					NodeExpression e = new FcallExpression(t, next.val, exprs);
 					return e;
-				} else {
+				}
+				else
+				{
 					NodeExpression e = new LiteralExpression(t, next.val);
 					return e;
 				}
-			} else if (next.type == Token.Type.ID) {
+			}
+			else if (next.type == Token.Type.ID)
+			{
 				// ID expression
 				tn.Next();
 
 				Token lpar = tn.Peek();
 
 				// assoc lookup
-				if (lpar.type == Token.Type.Keyword && lpar.val == "{") {
+				if (lpar.type == Token.Type.Keyword && lpar.val == "{")
+				{
 					tn.Next(); // eat {
 					NodeExpression id = new IDExpression(t, next.val);
 					NodeExpression key = ParseExpression(t);
 					Expect(Token.Type.Keyword, "}");
 					NodeExpression e = new AssocReadExpression(t, id, key);
 					return e;
-				} else {
+				}
+				else
+				{
 					NodeExpression e = new IDExpression(t, next.val);
 					return e;
 				}
 
-			} else if (next.type == Token.Type.Keyword && next.val == "(") {
+			}
+			else if (next.type == Token.Type.Keyword && next.val == "(")
+			{
 				// par expressions
 				tn.Next();
 				NodeExpression n = ParseExpression(t);
 				Expect(Token.Type.Keyword, ")");
 				return n;
-			} else if (next.type == Token.Type.Keyword && next.val == "[") {
+			}
+			else if (next.type == Token.Type.Keyword && next.val == "[")
+			{
 				// collection expressions
 
 				List<NodeExpression> exprs = new List<NodeExpression>();
 				Token comma = null;
 
-				do {
+				do
+				{
 					tn.Next();
 					Token p = tn.Peek();
-					if (p.type == Token.Type.Keyword && p.val == "]") break; // empty collection
+					if (p.type == Token.Type.Keyword && p.val == "]")
+						break; // empty collection
 					NodeExpression n = ParseExpression(t);
 					exprs.Add(n);
 					comma = tn.Peek();
@@ -102,33 +125,42 @@ namespace Pather.Parser {
 				Expect(Token.Type.Keyword, "]");
 				CollectionExpression ce = new CollectionExpression(t, exprs);
 				return ce;
-			} else if (next.type == Token.Type.Keyword && next.val == "-") {
+			}
+			else if (next.type == Token.Type.Keyword && next.val == "-")
+			{
 				// unary neg
 				Token neg = tn.Next();
 				NodeExpression P = ParseExpressionP(t);
 				NodeExpression e = new NegExpression(t, P);
 				return e;
-			} else {
+			}
+			else
+			{
 				Error("Currupt expression");
 			}
 
 			return null;
 		}
 
-		private NodeExpression ParseExpressionT(NodeTask t) {
+		private NodeExpression ParseExpressionT(NodeTask t)
+		{
 			// this is the hard one
 			NodeExpression o0 = ParseExpressionP(t);
 
 			Token next = tn.Peek();
 
 			while (next.type == Token.Type.Keyword &&
-				(next.val == "*" || next.val == "/")) {
+				(next.val == "*" || next.val == "/"))
+			{
 				Token op = tn.Next();
 				NodeExpression o1 = ParseExpressionP(t);
 
-				if (op.val == "*") {
+				if (op.val == "*")
+				{
 					o0 = new ExprMul(t, o0, o1);
-				} else if (op.val == "/") {
+				}
+				else if (op.val == "/")
+				{
 					o0 = new ExprDiv(t, o0, o1);
 				}
 
@@ -138,22 +170,29 @@ namespace Pather.Parser {
 			return o0;
 		}
 
-		private NodeExpression ParseExpressionE(NodeTask t) {
+		private NodeExpression ParseExpressionE(NodeTask t)
+		{
 			// this is the hard one
 			NodeExpression o0 = ParseExpressionT(t);
 
 			Token next = tn.Peek();
 
 			while (next.type == Token.Type.Keyword &&
-				(next.val == "+" || next.val == "-" || next.val == "%")) {
+				(next.val == "+" || next.val == "-" || next.val == "%"))
+			{
 				Token op = tn.Next();
 				NodeExpression o1 = ParseExpressionT(t);
 
-				if (op.val == "+") {
+				if (op.val == "+")
+				{
 					o0 = new ExprAdd(t, o0, o1);
-				} else if (op.val == "-") {
+				}
+				else if (op.val == "-")
+				{
 					o0 = new ExprSub(t, o0, o1);
-				} else if (op.val == "%") {
+				}
+				else if (op.val == "%")
+				{
 					o0 = new ExprMod(t, o0, o1);
 				}
 
@@ -163,14 +202,16 @@ namespace Pather.Parser {
 			return o0;
 		}
 
-		private NodeExpression ParseExpressionC(NodeTask t) {
+		private NodeExpression ParseExpressionC(NodeTask t)
+		{
 			NodeExpression o0 = ParseExpressionE(t);
 
 			Token next = tn.Peek();
 
 			while (next.type == Token.Type.Keyword &&
 				(next.val == "<" || next.val == "<=" || next.val == "==" ||
-				 next.val == ">=" || next.val == ">" || next.val == "!=")) {
+				 next.val == ">=" || next.val == ">" || next.val == "!="))
+			{
 				Token op = tn.Next();
 				NodeExpression o1 = ParseExpressionE(t);
 
@@ -193,13 +234,15 @@ namespace Pather.Parser {
 			return o0;
 		}
 
-		private NodeExpression ParseExpressionBAnd(NodeTask t) {
+		private NodeExpression ParseExpressionBAnd(NodeTask t)
+		{
 			NodeExpression o0 = ParseExpressionC(t);
 
 			Token next = tn.Peek();
 
 			while (next.type == Token.Type.Keyword &&
-				(next.val == "&&")) {
+				(next.val == "&&"))
+			{
 				Token op = tn.Next();
 				NodeExpression o1 = ParseExpressionBOr(t);
 
@@ -212,13 +255,15 @@ namespace Pather.Parser {
 			return o0;
 		}
 
-		private NodeExpression ParseExpressionBOr(NodeTask t) {
+		private NodeExpression ParseExpressionBOr(NodeTask t)
+		{
 			NodeExpression o0 = ParseExpressionBAnd(t);
 
 			Token next = tn.Peek();
 
 			while (next.type == Token.Type.Keyword &&
-				(next.val == "||")) {
+				(next.val == "||"))
+			{
 				Token op = tn.Next();
 				NodeExpression o1 = ParseExpressionBAnd(t);
 
@@ -231,26 +276,32 @@ namespace Pather.Parser {
 			return o0;
 		}
 
-		private NodeExpression ParseExpression(NodeTask t) {
+		private NodeExpression ParseExpression(NodeTask t)
+		{
 			// this is the hard one
 			NodeExpression e = ParseExpressionBOr(t);
 
 			Token next = tn.Peek();
 
-			if (next.type == Token.Type.Keyword && next.val == ";") {
+			if (next.type == Token.Type.Keyword && next.val == ";")
+			{
 				// all fine
-			} else {
+			}
+			else
+			{
 
 			}
 
 			return e;
 		}
 
-		public NodeTask ParseTask(NodeTask parent) {
+		public NodeTask ParseTask(NodeTask parent)
+		{
 			NodeTask t = new NodeTask(parent);
 			Token r = tn.Peek();
 
-			if (r.type == Token.Type.EOF) return null;
+			if (r.type == Token.Type.EOF)
+				return null;
 
 			String s_name = null;
 			String s_type = null;
@@ -264,7 +315,8 @@ namespace Pather.Parser {
 			}
 
 			Token colon = tn.Peek();
-			if (colon.type == Token.Type.Keyword && colon.val == ":") {
+			if (colon.type == Token.Type.Keyword && colon.val == ":")
+			{
 				tn.Next(); // eat colon
 				Token t2 = tn.Next(); // type
 
@@ -276,7 +328,9 @@ namespace Pather.Parser {
 
 				s_name = t1.val;
 				s_type = t2.val;
-			} else {
+			}
+			else
+			{
 				s_name = null;
 				s_type = t1.val;
 			}
@@ -291,7 +345,8 @@ namespace Pather.Parser {
 
 			// definitions
 			Token next = tn.Peek();
-			while (next.type == Token.Type.ID) {
+			while (next.type == Token.Type.ID)
+			{
 				Token ID = tn.Next(); // chomp ID
 
 				if (!Expect(Token.Type.Keyword, "="))
@@ -308,7 +363,8 @@ namespace Pather.Parser {
 
 			// child tasks
 			next = tn.Peek();
-			while (next.type == Token.Type.Literal) {
+			while (next.type == Token.Type.Literal)
+			{
 				NodeTask child = ParseTask(t);
 				t.AddTask(child);
 				next = tn.Peek();

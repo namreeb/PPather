@@ -2,18 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Pather.Parser {
-	public class IDExpression : NodeExpression {
+namespace Pather.Parser
+{
+	public class IDExpression : NodeExpression
+	{
 		string id;
 		NodeExpression expression;
 
 		public IDExpression(NodeTask task, string id)
-			: base(task) {
+			: base(task)
+		{
 			this.id = id;
 		}
 
-		public override Value GetValue() {
-			if (expression != null) {
+		public override Value GetValue()
+		{
+			if (expression != null)
+			{
 				// know where it is
 				expression.GetValue();
 			}
@@ -21,11 +26,13 @@ namespace Pather.Parser {
 			return task.GetValueOfId(id);
 		}
 
-		public override void dump(int d) {
+		public override void dump(int d)
+		{
 			Console.Write("$" + id);
 		}
 
-		public override bool BindSymbols() {
+		public override bool BindSymbols()
+		{
 			expression = task.GetExpressionOfId(id);
 			return expression != null;
 		}

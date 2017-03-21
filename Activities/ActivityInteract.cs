@@ -27,14 +27,17 @@ using Pather.Helpers;
 using Pather.Graph;
 using Pather.Helpers.UI;
 
+// Started adding a bit more documentation to my scripts
+// for people who like to look through them ^_^ - Flix
+
 namespace Pather.Activities
 {
-	public class ActivitySetHome : Activity
+	public class ActivityInteract : Activity
 	{
 		GUnit npc;
 
-		public ActivitySetHome(Task t, GUnit npc)
-			: base(t, "SetHome")
+		public ActivityInteract(Task t, GUnit npc)
+			: base(t, "Interact")
 		{
 			this.npc = npc;
 		}
@@ -47,20 +50,8 @@ namespace Pather.Activities
 		public override bool Do()
 		{
 			Functions.Interact(npc);
-			Thread.Sleep(1000);
-
-			if (GossipFrame.IsVisible())
-			{
-				if (!GossipFrame.ClickOptionText("inn your home"))
-					return false;
-				Thread.Sleep(2000); // Lag.
-				// When I tested it the popup was StaticPopup1. No idea if this changes...
-				if (GContext.Main.Interface.GetByName("StaticPopup1").IsVisible)
-				{
-					Functions.Click(GContext.Main.Interface.GetByName("StaticPopup1Button1"), false);
-				}
-				// Should now have hearth set.
-			}
+			PPather.WriteLine("Interact: Clicking NPC - " + npc.Name);
+			Thread.Sleep(1000); // Give it a sec in case of lag.
 			return true;
 		}
 	}

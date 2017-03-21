@@ -17,7 +17,9 @@ namespace WowTriangles
 	public abstract class TriangleSupplier
 	{
 		public abstract void GetTriangles(TriangleCollection to, float min_x, float min_y, float max_x, float max_y);
-		public virtual void Close() { }
+		public virtual void Close()
+		{
+		}
 	}
 
 
@@ -33,11 +35,11 @@ namespace WowTriangles
 
 
 		public static int TriangleFlagDeepWater = 1;
-		public static int TriangleFlagObject    = 2;
-		public static int TriangleFlagModel     = 4;
+		public static int TriangleFlagObject = 2;
+		public static int TriangleFlagModel = 4;
 
 		List<TriangleSupplier> suppliers = new List<TriangleSupplier>();
-	   
+
 
 		SparseMatrix2D<TriangleCollection> chunks;
 
@@ -115,7 +117,8 @@ namespace WowTriangles
 			int grid_x, grid_y;
 			GetGridStartAt(x, y, out grid_x, out grid_y);
 
-			if (chunks.IsSet(grid_x, grid_y)) return;
+			if (chunks.IsSet(grid_x, grid_y))
+				return;
 			EvictIfNeeded();
 			TriangleCollection tc = new TriangleCollection();
 
@@ -170,8 +173,8 @@ namespace WowTriangles
 			if (UseOctree)
 			{
 				TriangleOctree ot = tc.GetOctree();
-				tst = ts = ot.FindTrianglesInBox(x - toonSize, y - toonSize, z + toonHeight - toonSize*2,
-										   x + toonSize, y + toonSize, z + toonHeight );
+				tst = ts = ot.FindTrianglesInBox(x - toonSize, y - toonSize, z + toonHeight - toonSize * 2,
+										   x + toonSize, y + toonSize, z + toonHeight);
 			}
 
 			if (UseMatrix)
@@ -183,7 +186,7 @@ namespace WowTriangles
 			Vector toon;
 			toon.x = x;
 			toon.y = y;
-			toon.z = z + toonHeight-toonSize;
+			toon.z = z + toonHeight - toonSize;
 
 			//            for(int t = 0 ; t<tc.GetNumberOfTriangles(); t++)
 			//            {
@@ -199,7 +202,8 @@ namespace WowTriangles
 						out vertex1.x, out vertex1.y, out vertex1.z,
 						out vertex2.x, out vertex2.y, out vertex2.z, out flags);
 				float d = Utils.PointDistanceToTriangle(toon, vertex0, vertex1, vertex2);
-				if (d < toonSize) return true;
+				if (d < toonSize)
+					return true;
 
 			}
 
@@ -259,8 +263,10 @@ namespace WowTriangles
 		{
 			TriangleCollection tc = GetChunkAt(x0, y0);
 
-			float dx = x0-x1; float dy = y0-y1; float dz = z0-z1; 
-			float stepLength = (float)Math.Sqrt(dx*dx+dy*dy+dz+dz);
+			float dx = x0 - x1;
+			float dy = y0 - y1;
+			float dz = z0 - z1;
+			float stepLength = (float)Math.Sqrt(dx * dx + dy * dy + dz + dz);
 			// 1: check steepness
 
 			// TODO
@@ -271,23 +277,25 @@ namespace WowTriangles
 			float mid_y = (y0 + y1) / 2.0f;
 			float mid_z = (z0 + z1) / 2.0f;
 			float mid_z_hit = 0;
-			float mid_dz = Math.Abs(stepLength); 
+			float mid_dz = Math.Abs(stepLength);
 			//if (mid_dz < 1.0f) mid_dz = 1.0f;
 			int mid_flags = 0;
 			if (FindStandableAt(mid_x, mid_y, mid_z - mid_dz, mid_z + mid_dz, out mid_z_hit, out mid_flags, toonHeight, toonSize))
 			{
 				float dz0 = Math.Abs(z0 - mid_z_hit);
-				float dz1 = Math.Abs(z1 - mid_z_hit); 
-				
-			   // Console.WriteLine("z0 " + z0 + " z1 " + z1 + " dz0 " + dz0+ " dz1 " + dz1 );
-				if (dz0 > stepLength / 2.0 && dz0 > 1.0) return true; // too steep
-				
-				if (dz1 > stepLength / 2.0 && dz1 > 1.0) return true; // too steep
+				float dz1 = Math.Abs(z1 - mid_z_hit);
+
+				// Console.WriteLine("z0 " + z0 + " z1 " + z1 + " dz0 " + dz0+ " dz1 " + dz1 );
+				if (dz0 > stepLength / 2.0 && dz0 > 1.0)
+					return true; // too steep
+
+				if (dz1 > stepLength / 2.0 && dz1 > 1.0)
+					return true; // too steep
 			}
 			else
 			{
 				// bad!
-				return true; 
+				return true;
 			}
 
 			ICollection<int> ts, tsm, tst;
@@ -312,13 +320,21 @@ namespace WowTriangles
 			bool coll = false;
 			Vector from, from_up;
 			Vector to, to_up;
-			from.x = x0; from.y = y0; from.z = z0 + toonSize;
-			from_up.x = x0; from_up.y = y0; from_up.z = z0 + toonHeight - toonSize;
+			from.x = x0;
+			from.y = y0;
+			from.z = z0 + toonSize;
+			from_up.x = x0;
+			from_up.y = y0;
+			from_up.z = z0 + toonHeight - toonSize;
 
-			to.x = x1; to.y = y1; to.z = z1 + toonSize;
-			to_up.x = x1; to_up.y = y1; to_up.z = z1 + toonHeight - toonSize;
+			to.x = x1;
+			to.y = y1;
+			to.z = z1 + toonSize;
+			to_up.x = x1;
+			to_up.y = y1;
+			to_up.z = z1 + toonHeight - toonSize;
 
-			
+
 
 			foreach (int t in ts)
 			//for(int t = 0 ; t<tc.GetNumberOfTriangles(); t++)
@@ -372,8 +388,12 @@ namespace WowTriangles
 			}
 
 			Vector s0, s1;
-			s0.x = x; s0.y = y; s0.z = min_z;
-			s1.x = x; s1.y = y; s1.z = max_z;
+			s0.x = x;
+			s0.y = y;
+			s0.z = min_z;
+			s1.x = x;
+			s1.y = y;
+			s1.z = max_z;
 
 			float best_z = -1E30f;
 			int best_flags = 0;
@@ -461,7 +481,7 @@ namespace WowTriangles
 					z0 = best_z;
 					flags = best_flags;
 					return false; // too close to cliff
-					
+
 				}
 
 			}
@@ -684,7 +704,8 @@ namespace WowTriangles
 		{
 			// Create new if needed or return old one
 
-			if (vertexMatrix.IsSet(x, y, z)) return vertexMatrix.Get(x, y, z);
+			if (vertexMatrix.IsSet(x, y, z))
+				return vertexMatrix.Get(x, y, z);
 
 
 
@@ -700,7 +721,8 @@ namespace WowTriangles
 			// check limits
 			if (!CheckVertexLimits(v0) &&
 				!CheckVertexLimits(v1) &&
-				!CheckVertexLimits(v2)) return -1;
+				!CheckVertexLimits(v2))
+				return -1;
 			// Create new
 			SetMinMax(v0);
 			SetMinMax(v1);
@@ -721,21 +743,30 @@ namespace WowTriangles
 		{
 			float x, y, z;
 			GetVertex(v, out x, out y, out z);
-			if (x < min_x) min_x = x;
-			if (y < min_y) min_y = y;
-			if (z < min_z) min_z = z;
+			if (x < min_x)
+				min_x = x;
+			if (y < min_y)
+				min_y = y;
+			if (z < min_z)
+				min_z = z;
 
-			if (x > max_x) max_x = x;
-			if (y > max_y) max_y = y;
-			if (z > max_z) max_z = z;
+			if (x > max_x)
+				max_x = x;
+			if (y > max_y)
+				max_y = y;
+			if (z > max_z)
+				max_z = z;
 		}
 		private bool CheckVertexLimits(int v)
 		{
 			float x, y, z;
 			GetVertex(v, out x, out y, out z);
-			if (x < limit_min_x || x > limit_max_x) return false;
-			if (y < limit_min_y || y > limit_max_y) return false;
-			if (z < limit_min_z || z > limit_max_z) return false;
+			if (x < limit_min_x || x > limit_max_x)
+				return false;
+			if (y < limit_min_y || y > limit_max_y)
+				return false;
+			if (z < limit_min_z || z > limit_max_z)
+				return false;
 
 			return true;
 		}
@@ -868,7 +899,8 @@ namespace WowTriangles
 				l.Add(triangle);
 			}
 
-			if (l.Count > maxAtOne) maxAtOne = l.Count;
+			if (l.Count > maxAtOne)
+				maxAtOne = l.Count;
 		}
 
 		public TriangleMatrix(TriangleCollection tc)
@@ -1006,7 +1038,8 @@ namespace WowTriangles
 					while (rover != null)
 					{
 						this.triangles[i] = rover.val;
-						rover = rover.next; i++;
+						rover = rover.next;
+						i++;
 					}
 					if (triangles.Count >= SplitSize)
 					{
@@ -1192,9 +1225,11 @@ namespace WowTriangles
 			Node n = new Node(i);
 			n.next = first;
 			n.prev = null;
-			if (first != null) first.prev = n;
+			if (first != null)
+				first.prev = n;
 			first = n;
-			if (last == null) last = n;
+			if (last == null)
+				last = n;
 
 
 			nodes++;
@@ -1208,9 +1243,12 @@ namespace WowTriangles
 
 		public void Check()
 		{
-			if (first != null && first.prev != null) Error("First element must have prev == null");
-			if (last != null && last.next != null) Error("Last element must have next == null");
-			if (Count != RealCount) Error("Count != RealCount");
+			if (first != null && first.prev != null)
+				Error("First element must have prev == null");
+			if (last != null && last.next != null)
+				Error("Last element must have next == null");
+			if (Count != RealCount)
+				Error("Count != RealCount");
 		}
 
 		public void Steal(Node n, SimpleLinkedList from)
@@ -1220,7 +1258,8 @@ namespace WowTriangles
 			if (n == from.first)
 			{ // n was first
 				from.first = n.next;
-				if (from.first != null) from.first.prev = null;
+				if (from.first != null)
+					from.first.prev = null;
 			}
 			else
 			{
@@ -1230,7 +1269,8 @@ namespace WowTriangles
 			if (n == from.last)
 			{ // n was last
 				from.last = n.prev;
-				if (from.last != null) from.last.next = null;
+				if (from.last != null)
+					from.last.next = null;
 			}
 			else
 			{
@@ -1239,11 +1279,13 @@ namespace WowTriangles
 
 			from.nodes--;
 
-			if (first != null) first.prev = n;
+			if (first != null)
+				first.prev = n;
 			n.next = first;
 			n.prev = null;
 			first = n;
-			if (last == null) last = n;
+			if (last == null)
+				last = n;
 
 			nodes++;
 		}
@@ -1253,7 +1295,8 @@ namespace WowTriangles
 			// put them first
 			//Check();
 			// other.Check(); 
-			if (other.first == null) return; // other empty
+			if (other.first == null)
+				return; // other empty
 			if (first == null) // me empty
 			{
 				first = other.first;
@@ -1355,7 +1398,8 @@ namespace WowTriangles
 					while (rover != null)
 					{
 						this.triangles[i] = rover.val;
-						rover = rover.next; i++;
+						rover = rover.next;
+						i++;
 					}
 					if (triangles.Count >= SplitSize)
 					{

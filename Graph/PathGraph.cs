@@ -6,8 +6,10 @@ using System.Threading;
 using Glider.Common.Objects;
 using WowTriangles;
 
-namespace Pather.Graph {
-	public class PathGraph {
+namespace Pather.Graph
+{
+	public class PathGraph
+	{
 		public const float toonHeight = 2.0f;
 		public const float toonSize = 0.5f;
 
@@ -35,46 +37,58 @@ namespace Pather.Graph {
 
 		public PathGraph(string continent,
 						 ChunkedTriangleCollection triangles,
-						 TriangleCollection paint) {
+						 TriangleCollection paint)
+		{
 			this.Continent = continent;
 			this.triangleWorld = triangles;
 			this.paint = paint;
 			Clear();
 		}
 
-		public void Close() {
+		public void Close()
+		{
 			triangleWorld.Close();
 		}
 
-		public void Clear() {
+		public void Clear()
+		{
 			chunks = new SparseMatrix2D<GraphChunk>(8);
 		}
 
-		private void GetChunkCoord(float x, float y, out int ix, out int iy) {
+		private void GetChunkCoord(float x, float y, out int ix, out int iy)
+		{
 			ix = (int)((CHUNK_BASE + x) / GraphChunk.CHUNK_SIZE);
 			iy = (int)((CHUNK_BASE + y) / GraphChunk.CHUNK_SIZE);
 		}
 
-		private void GetChunkBase(int ix, int iy, out float bx, out float by) {
+		private void GetChunkBase(int ix, int iy, out float bx, out float by)
+		{
 			bx = (float)ix * GraphChunk.CHUNK_SIZE - CHUNK_BASE;
 			by = (float)iy * GraphChunk.CHUNK_SIZE - CHUNK_BASE;
 		}
 
-		private GraphChunk GetChunkAt(float x, float y) {
+		private GraphChunk GetChunkAt(float x, float y)
+		{
 			int ix, iy;
 			GetChunkCoord(x, y, out ix, out iy);
 			GraphChunk c = chunks.Get(ix, iy);
-			if (c != null) c.LRU = LRU++;
+			if (c != null)
+				c.LRU = LRU++;
 			return c;
 		}
 
-		private void CheckForChunkEvict() {
-			lock (this) {
-				if (ActiveChunks.Count < 25) return;
+		private void CheckForChunkEvict()
+		{
+			lock (this)
+			{
+				if (ActiveChunks.Count < 25)
+					return;
 
 				GraphChunk evict = null;
-				foreach (GraphChunk gc in ActiveChunks) {
-					if (evict == null || gc.LRU < evict.LRU) {
+				foreach (GraphChunk gc in ActiveChunks)
+				{
+					if (evict == null || gc.LRU < evict.LRU)
+					{
 						evict = gc;
 					}
 				}
@@ -89,11 +103,15 @@ namespace Pather.Graph {
 
 
 
-		public void Save() {
-			lock (this) {
+		public void Save()
+		{
+			lock (this)
+			{
 				ICollection<GraphChunk> l = chunks.GetAllElements();
-				foreach (GraphChunk gc in l) {
-					if (gc.modified) {
+				foreach (GraphChunk gc in l)
+				{
+					if (gc.modified)
+					{
 						gc.Save(BaseDir + "\\" + Continent + "\\");
 					}
 				}
@@ -101,9 +119,11 @@ namespace Pather.Graph {
 		}
 
 		// Create and load from file if exisiting
-		private void LoadChunk(float x, float y) {
+		private void LoadChunk(float x, float y)
+		{
 			GraphChunk gc = GetChunkAt(x, y);
-			if (gc == null) {
+			if (gc == null)
+			{
 				int ix, iy;
 				GetChunkCoord(x, y, out ix, out iy);
 
@@ -123,23 +143,30 @@ namespace Pather.Graph {
 			}
 		}
 
-		public Spot AddSpot(Spot s) {
+		public Spot AddSpot(Spot s)
+		{
 			LoadChunk(s.X, s.Y);
 			GraphChunk gc = GetChunkAt(s.X, s.Y);
 			return gc.AddSpot(s);
 		}
 
 		// Connect according to MPQ data
-		public Spot AddAndConnectSpot(Spot s) {
+		public Spot AddAndConnectSpot(Spot s)
+		{
 			s = AddSpot(s);
 			List<Spot> close = FindAllSpots(s.location, MaxStepLength);
-			if (!s.GetFlag(Spot.FLAG_MPQ_MAPPED)) {
+			if (!s.GetFlag(Spot.FLAG_MPQ_MAPPED))
+			{
 
-				foreach (Spot cs in close) {
+				foreach (Spot cs in close)
+				{
 					if (cs.HasPathTo(this, s) && s.HasPathTo(this, cs) ||
-						cs.IsBlocked()) {
-					} else if (!triangleWorld.IsStepBlocked(s.X, s.Y, s.Z, cs.X, cs.Y, cs.Z,
-													 toonHeight, toonSize, null)) {
+						cs.IsBlocked())
+					{
+					}
+					else if (!triangleWorld.IsStepBlocked(s.X, s.Y, s.Z, cs.X, cs.Y, cs.Z,
+													 toonHeight, toonSize, null))
+					{
 						float mid_x = (s.X + cs.X) / 2;
 						float mid_y = (s.Y + cs.Y) / 2;
 						float mid_z = (s.Z + cs.Z) / 2;
@@ -147,7 +174,8 @@ namespace Pather.Graph {
 						int flags;
 						if (triangleWorld.FindStandableAt(mid_x, mid_y,
 														  mid_z - WantedStepLength * .75f, mid_z + WantedStepLength * .75f,
-														  out stand_z, out flags, toonHeight, toonSize)) {
+														  out stand_z, out flags, toonHeight, toonSize))
+						{
 							s.AddPathTo(cs);
 							cs.AddPathTo(s);
 						}
@@ -157,20 +185,24 @@ namespace Pather.Graph {
 			return s;
 		}
 
-		public Spot GetSpot(float x, float y, float z) {
+		public Spot GetSpot(float x, float y, float z)
+		{
 			LoadChunk(x, y);
 			GraphChunk gc = GetChunkAt(x, y);
 			return gc.GetSpot(x, y, z);
 		}
 
-		public Spot GetSpot2D(float x, float y) {
+		public Spot GetSpot2D(float x, float y)
+		{
 			LoadChunk(x, y);
 			GraphChunk gc = GetChunkAt(x, y);
 			return gc.GetSpot2D(x, y);
 		}
 
-		public Spot GetSpot(Location l) {
-			if (l == null) return null;
+		public Spot GetSpot(Location l)
+		{
+			if (l == null)
+				return null;
 			return GetSpot(l.X, l.Y, l.Z);
 		}
 
@@ -178,26 +210,32 @@ namespace Pather.Graph {
 
 		// this can be slow...
 
-		public Spot FindClosestSpot(Location l_d) {
+		public Spot FindClosestSpot(Location l_d)
+		{
 			return FindClosestSpot(l_d, 30.0f, null);
 		}
 
-		public Spot FindClosestSpot(Location l_d, Set<Spot> Not) {
+		public Spot FindClosestSpot(Location l_d, Set<Spot> Not)
+		{
 			return FindClosestSpot(l_d, 30.0f, Not);
 		}
 
 
-		public Spot FindClosestSpot(Location l, float max_d) {
+		public Spot FindClosestSpot(Location l, float max_d)
+		{
 			return FindClosestSpot(l, max_d, null);
 		}
 
 		// this can be slow...
-		public Spot FindClosestSpot(Location l, float max_d, Set<Spot> Not) {
+		public Spot FindClosestSpot(Location l, float max_d, Set<Spot> Not)
+		{
 			Spot closest = null;
 			float closest_d = 1E30f;
 			int d = 0;
-			while ((float)d <= max_d + 0.1f) {
-				for (int i = -d; i <= d; i++) {
+			while ((float)d <= max_d + 0.1f)
+			{
+				for (int i = -d; i <= d; i++)
+				{
 					float x_up = l.X + (float)d;
 					float x_dn = l.X - (float)d;
 					float y_up = l.Y + (float)d;
@@ -209,12 +247,15 @@ namespace Pather.Graph {
 					Spot s1 = GetSpot2D(l.X + i, y_dn);
 					Spot s3 = GetSpot2D(l.X + i, y_up);
 					Spot[] sv = { s0, s1, s2, s3 };
-					foreach (Spot s in sv) {
+					foreach (Spot s in sv)
+					{
 						Spot ss = s;
-						while (ss != null) {
+						while (ss != null)
+						{
 							float di = ss.GetDistanceTo(l);
 							if (di < max_d && !ss.IsBlocked() &&
-								(di < closest_d)) {
+								(di < closest_d))
+							{
 								closest = ss;
 								closest_d = di;
 							}
@@ -234,12 +275,15 @@ namespace Pather.Graph {
 			return closest;
 		}
 
-		public List<Spot> FindAllSpots(Location l, float max_d) {
+		public List<Spot> FindAllSpots(Location l, float max_d)
+		{
 			List<Spot> sl = new List<Spot>();
 
 			int d = 0;
-			while ((float)d <= max_d + 0.1f) {
-				for (int i = -d; i <= d; i++) {
+			while ((float)d <= max_d + 0.1f)
+			{
+				for (int i = -d; i <= d; i++)
+				{
 					float x_up = l.X + (float)d;
 					float x_dn = l.X - (float)d;
 					float y_up = l.Y + (float)d;
@@ -251,11 +295,14 @@ namespace Pather.Graph {
 					Spot s1 = GetSpot2D(l.X + i, y_dn);
 					Spot s3 = GetSpot2D(l.X + i, y_up);
 					Spot[] sv = { s0, s1, s2, s3 };
-					foreach (Spot s in sv) {
+					foreach (Spot s in sv)
+					{
 						Spot ss = s;
-						while (ss != null) {
+						while (ss != null)
+						{
 							float di = ss.GetDistanceTo(l);
-							if (di < max_d) {
+							if (di < max_d)
+							{
 								sl.Add(ss);
 							}
 							ss = ss.next;
@@ -267,17 +314,22 @@ namespace Pather.Graph {
 			return sl;
 		}
 
-		public List<Spot> FindAllSpots(float min_x, float min_y, float max_x, float max_y) {
+		public List<Spot> FindAllSpots(float min_x, float min_y, float max_x, float max_y)
+		{
 			// hmm, do it per chunk
 			List<Spot> l = new List<Spot>();
-			for (float mx = min_x; mx <= max_x + GraphChunk.CHUNK_SIZE - 1; mx += GraphChunk.CHUNK_SIZE) {
-				for (float my = min_y; my <= max_y + GraphChunk.CHUNK_SIZE - 1; my += GraphChunk.CHUNK_SIZE) {
+			for (float mx = min_x; mx <= max_x + GraphChunk.CHUNK_SIZE - 1; mx += GraphChunk.CHUNK_SIZE)
+			{
+				for (float my = min_y; my <= max_y + GraphChunk.CHUNK_SIZE - 1; my += GraphChunk.CHUNK_SIZE)
+				{
 					LoadChunk(mx, my);
 					GraphChunk gc = GetChunkAt(mx, my);
 					List<Spot> sl = gc.GetAllSpots();
-					foreach (Spot s in sl) {
+					foreach (Spot s in sl)
+					{
 						if (s.X >= min_x && s.X <= max_x &&
-						   s.Y >= min_y && s.Y <= max_y) {
+						   s.Y >= min_y && s.Y <= max_y)
+						{
 							l.Add(s);
 						}
 					}
@@ -288,28 +340,35 @@ namespace Pather.Graph {
 
 
 
-		public Spot TryAddSpot(Spot wasAt, Location isAt) {
+		public Spot TryAddSpot(Spot wasAt, Location isAt)
+		{
 			Spot isAtSpot = FindClosestSpot(isAt, WantedStepLength);
-			if (isAtSpot == null) {
+			if (isAtSpot == null)
+			{
 				isAtSpot = GetSpot(isAt);
-				if (isAtSpot == null) {
+				if (isAtSpot == null)
+				{
 					Spot s = new Spot(isAt);
 					s = AddSpot(s);
 					isAtSpot = s;
 				}
-				if (isAtSpot.GetFlag(Spot.FLAG_BLOCKED)) {
+				if (isAtSpot.GetFlag(Spot.FLAG_BLOCKED))
+				{
 					isAtSpot.SetFlag(Spot.FLAG_BLOCKED, false);
 					Log("Cleared blocked flag");
 				}
-				if (wasAt != null) {
+				if (wasAt != null)
+				{
 					wasAt.AddPathTo(isAtSpot);
 					isAtSpot.AddPathTo(wasAt);
 				}
 
 				List<Spot> sl = FindAllSpots(isAtSpot.location, MaxStepLength);
 				int connected = 0;
-				foreach (Spot other in sl) {
-					if (other != isAtSpot) {
+				foreach (Spot other in sl)
+				{
+					if (other != isAtSpot)
+					{
 						other.AddPathTo(isAtSpot);
 						isAtSpot.AddPathTo(other);
 						connected++;
@@ -318,8 +377,11 @@ namespace Pather.Graph {
 				}
 				Log("Learned a new spot at " + isAtSpot.location + " connected to " + connected + " other spots");
 				wasAt = isAtSpot;
-			} else {
-				if (wasAt != null && wasAt != isAtSpot) {
+			}
+			else
+			{
+				if (wasAt != null && wasAt != isAtSpot)
+				{
 					// moved to an old spot, make sure they are connected
 					wasAt.AddPathTo(isAtSpot);
 					isAtSpot.AddPathTo(wasAt);
@@ -330,7 +392,8 @@ namespace Pather.Graph {
 			return wasAt;
 		}
 
-		private bool LineCrosses(Location line0, Location line1, Location point) {
+		private bool LineCrosses(Location line0, Location line1, Location point)
+		{
 			float LineMag = line0.GetDistanceTo(line1); // Magnitude( LineEnd, LineStart );
 
 			float U =
@@ -339,28 +402,34 @@ namespace Pather.Graph {
 				  ((point.Z - line0.Z) * (line1.Z - line0.Z))) /
 				(LineMag * LineMag);
 
-			if (U < 0.0f || U > 1.0f) return false;
+			if (U < 0.0f || U > 1.0f)
+				return false;
 
 			float InterX = line0.X + U * (line1.X - line0.X);
 			float InterY = line0.Y + U * (line1.Y - line0.Y);
 			float InterZ = line0.Z + U * (line1.Z - line0.Z);
 
 			float Distance = point.GetDistanceTo(new Location(InterX, InterY, InterZ));
-			if (Distance < 0.5f) return true;
+			if (Distance < 0.5f)
+				return true;
 			return false;
 		}
 
-		public void MarkBlockedAt(Location loc) {
+		public void MarkBlockedAt(Location loc)
+		{
 			Spot s = new Spot(loc);
 			s = AddSpot(s);
 			s.SetFlag(Spot.FLAG_BLOCKED, true);
 			// Find all paths leading though this one
 
 			List<Spot> sl = FindAllSpots(loc, 5.0f);
-			foreach (Spot sp in sl) {
+			foreach (Spot sp in sl)
+			{
 				List<Location> paths = sp.GetPaths();
-				foreach (Location to in paths) {
-					if (LineCrosses(sp.location, to, loc)) {
+				foreach (Location to in paths)
+				{
+					if (LineCrosses(sp.location, to, loc))
+					{
 						sp.RemovePathTo(to);
 					}
 				}
@@ -368,13 +437,15 @@ namespace Pather.Graph {
 
 		}
 
-		public void BlacklistStep(Location from, Location to) {
+		public void BlacklistStep(Location from, Location to)
+		{
 			Spot froms = GetSpot(from);
 			if (froms != null)
 				froms.RemovePathTo(to);
 		}
 
-		public void MarkStuckAt(Location loc, float heading) {
+		public void MarkStuckAt(Location loc, float heading)
+		{
 			// TODO another day...
 			Location inf = loc.InFrontOf(heading, 1.0f);
 			MarkBlockedAt(inf);
@@ -392,14 +463,17 @@ namespace Pather.Graph {
 
 
 
-		float TurnCost(Spot from, Spot to) {
+		float TurnCost(Spot from, Spot to)
+		{
 			Spot prev = from.traceBack;
-			if (prev == null) return 0.0f;
+			if (prev == null)
+				return 0.0f;
 			return TurnCost(prev.X, prev.Y, prev.Z, from.X, from.Y, from.Z, to.X, to.Y, to.Z);
 
 		}
 
-		float TurnCost(float x0, float y0, float z0, float x1, float y1, float z1, float x2, float y2, float z2) {
+		float TurnCost(float x0, float y0, float z0, float x1, float y1, float z1, float x2, float y2, float z2)
+		{
 			float v1x = x1 - x0;
 			float v1y = y1 - y0;
 			float v1z = z1 - z0;
@@ -428,7 +502,8 @@ namespace Pather.Graph {
 		private Spot search(Spot src, Spot dst,
 							Location realDst,
 							float minHowClose, bool AllowInvented,
-							ILocationHeuristics locationHeuristics) {
+							ILocationHeuristics locationHeuristics)
+		{
 			searchID++;
 			int count = 0;
 			int prevCount = 0;
@@ -457,12 +532,15 @@ namespace Pather.Graph {
 				//q.Remove(spot);
 
 
-				if (spot.SearchIsClosed(currentSearchID)) continue;
+				if (spot.SearchIsClosed(currentSearchID))
+					continue;
 				spot.SearchClose(currentSearchID);
 
-				if (count % 100 == 0) {
+				if (count % 100 == 0)
+				{
 					System.TimeSpan span = System.DateTime.Now.Subtract(lastSpam);
-					if (span.Seconds != 0 && BestSpot != null) {
+					if (span.Seconds != 0 && BestSpot != null)
+					{
 						Thread.Sleep(50); // give glider a chance to stop us
 						int t = span.Seconds * 1000 + span.Milliseconds;
 						if (t == 0)
@@ -476,7 +554,8 @@ namespace Pather.Graph {
 				count++;
 
 
-				if (spot.Equals(dst) || spot.location.GetDistanceTo(realDst) <= minHowClose) {
+				if (spot.Equals(dst) || spot.location.GetDistanceTo(realDst) <= minHowClose)
+				{
 					System.TimeSpan ts = System.DateTime.Now.Subtract(pre);
 					int t = ts.Seconds * 1000 + ts.Milliseconds;
 					/*if(t == 0)
@@ -488,12 +567,14 @@ namespace Pather.Graph {
 				}
 
 				if (BestSpot == null ||
-				   spot.location.GetDistanceTo(realDst) < BestSpot.location.GetDistanceTo(realDst)) {
+				   spot.location.GetDistanceTo(realDst) < BestSpot.location.GetDistanceTo(realDst))
+				{
 					BestSpot = spot;
 				}
 				{
 					System.TimeSpan ts = System.DateTime.Now.Subtract(pre);
-					if (ts.Seconds > 15) {
+					if (ts.Seconds > 15)
+					{
 						Log("too long search, aborting");
 						break;
 					}
@@ -506,10 +587,12 @@ namespace Pather.Graph {
 
 				int new_found = 0;
 				List<Spot> ll = spot.GetPathsToSpots(this);
-				foreach (Spot to in ll) {
+				foreach (Spot to in ll)
+				{
 					//Spot to = GetSpot(l);
 
-					if (to != null && !to.IsBlocked() && !to.SearchIsClosed(currentSearchID)) {
+					if (to != null && !to.IsBlocked() && !to.SearchIsClosed(currentSearchID))
+					{
 						float old_score = 1E30f;
 
 						float new_score = src_score + spot.GetDistanceTo(to) + TurnCost(spot, to);
@@ -518,11 +601,13 @@ namespace Pather.Graph {
 						if (to.GetFlag(Spot.FLAG_WATER))
 							new_score += 30;
 
-						if (to.SearchScoreIsSet(currentSearchID)) {
+						if (to.SearchScoreIsSet(currentSearchID))
+						{
 							old_score = to.SearchScoreGet(currentSearchID);
 						}
 
-						if (new_score < old_score) {
+						if (new_score < old_score)
+						{
 							// shorter path to here found
 							to.traceBack = spot;
 							//if (q.Contains(to)) 
@@ -535,50 +620,66 @@ namespace Pather.Graph {
 				}
 
 				//hmm search the triangles :p
-				if (!spot.GetFlag(Spot.FLAG_MPQ_MAPPED)) {
+				if (!spot.GetFlag(Spot.FLAG_MPQ_MAPPED))
+				{
 
 					float PI = (float)Math.PI;
 
 					spot.SetFlag(Spot.FLAG_MPQ_MAPPED, true);
-					for (float a = 0; a < PI * 2; a += PI / 8) {
+					for (float a = 0; a < PI * 2; a += PI / 8)
+					{
 						float nx = spot.X + (float)Math.Sin(a) * WantedStepLength;// *0.8f;
 						float ny = spot.Y + (float)Math.Cos(a) * WantedStepLength;// *0.8f;
 						Spot s = GetSpot(nx, ny, spot.Z);
 						if (s == null)
 							s = FindClosestSpot(new Location(nx, ny, spot.Z), MinStepLength); // TODO: this is slow
-						if (s != null) {
+						if (s != null)
+						{
 							// hmm, they should already be connected 
-						} else {
+						}
+						else
+						{
 							float new_z;
 							int flags;
 							// gogo find a new one
 							//PPather.WriteLine("gogo brave new world");
 							if (!triangleWorld.FindStandableAt(nx, ny,
 															   spot.Z - WantedStepLength * .75f, spot.Z + WantedStepLength * .75f,
-															   out new_z, out flags, toonHeight, toonSize)) {
+															   out new_z, out flags, toonHeight, toonSize))
+							{
 								//Spot blocked = new Spot(nx, ny, spot.Z);
 								//blocked.SetFlag(Spot.FLAG_BLOCKED, true);
 								//AddSpot(blocked);
-							} else {
+							}
+							else
+							{
 								s = FindClosestSpot(new Location(nx, ny, new_z), MinStepLength);
-								if (s == null) {
+								if (s == null)
+								{
 									if (!triangleWorld.IsStepBlocked(spot.X, spot.Y, spot.Z, nx, ny, new_z,
-																	 toonHeight, toonSize, null)) {
+																	 toonHeight, toonSize, null))
+									{
 
 										Spot n = new Spot(nx, ny, new_z);
 										Spot to = AddAndConnectSpot(n);
-										if ((flags & ChunkedTriangleCollection.TriangleFlagDeepWater) != 0) {
+										if ((flags & ChunkedTriangleCollection.TriangleFlagDeepWater) != 0)
+										{
 											to.SetFlag(Spot.FLAG_WATER, true);
 										}
 										if (((flags & ChunkedTriangleCollection.TriangleFlagModel) != 0) ||
-											((flags & ChunkedTriangleCollection.TriangleFlagObject) != 0)) {
+											((flags & ChunkedTriangleCollection.TriangleFlagObject) != 0))
+										{
 											to.SetFlag(Spot.FLAG_INDOORS, true);
 										}
-										if (to != n || to.SearchIsClosed(currentSearchID)) {
+										if (to != n || to.SearchIsClosed(currentSearchID))
+										{
 											// PPather.WriteLine("/sigh");
-										} else {
+										}
+										else
+										{
 											// There should be a path from source to this one now
-											if (spot.HasPathTo(to.location)) {
+											if (spot.HasPathTo(to.location))
+											{
 												float old_score = 1E30f;
 
 												float new_score = src_score + spot.GetDistanceTo(to) + TurnCost(spot, to);
@@ -589,11 +690,13 @@ namespace Pather.Graph {
 												if (to.GetFlag(Spot.FLAG_WATER))
 													new_score += 30;
 
-												if (to.SearchScoreIsSet(currentSearchID)) {
+												if (to.SearchScoreIsSet(currentSearchID))
+												{
 													old_score = to.SearchScoreGet(currentSearchID);
 												}
 
-												if (new_score < old_score) {
+												if (new_score < old_score)
+												{
 													// shorter path to here found
 													to.traceBack = spot;
 													//if (q.Contains(to)) 
@@ -602,7 +705,9 @@ namespace Pather.Graph {
 													q.Enqueue(to, -(new_score + to.GetDistanceTo(dst) * heuristicsFactor));
 													new_found++;
 												}
-											} else {
+											}
+											else
+											{
 												// woot! I added a new one and it is not connected!?!?
 												//PPather.WriteLine("/cry");
 											}
@@ -618,7 +723,9 @@ namespace Pather.Graph {
 			}
 			{
 				System.TimeSpan ts = System.DateTime.Now.Subtract(pre);
-				int t = ts.Seconds * 1000 + ts.Milliseconds; if (t == 0) t = 1;
+				int t = ts.Seconds * 1000 + ts.Milliseconds;
+				if (t == 0)
+					t = 1;
 				Log("  search failed. " + (count * 1000) / t + " steps/s");
 
 			}
@@ -626,20 +733,25 @@ namespace Pather.Graph {
 		}
 
 
-		private List<Spot> FollowTraceBack(Spot from, Spot to) {
+		private List<Spot> FollowTraceBack(Spot from, Spot to)
+		{
 			List<Spot> path = new List<Spot>();
 			int count = 0;
 
 			Spot r = to;
 			path.Insert(0, to); // add last
-			while (r != null) {
+			while (r != null)
+			{
 				Spot s = r.traceBack;
 
-				if (s != null) {
+				if (s != null)
+				{
 					path.Insert(0, s); // add first
 					r = s;
-					if (r == from) r = null;  // fount source
-				} else
+					if (r == from)
+						r = null;  // fount source
+				}
+				else
 					r = null;
 				count++;
 			}
@@ -648,10 +760,12 @@ namespace Pather.Graph {
 
 		}
 
-		public bool IsUnderwaterOrInAir(Location l) {
+		public bool IsUnderwaterOrInAir(Location l)
+		{
 			int flags;
 			float z;
-			if (triangleWorld.FindStandableAt(l.X, l.Y, l.Z - 50.0f, l.Z + 5.0f, out z, out  flags, toonHeight, toonSize)) {
+			if (triangleWorld.FindStandableAt(l.X, l.Y, l.Z - 50.0f, l.Z + 5.0f, out z, out  flags, toonHeight, toonSize))
+			{
 				if ((flags & ChunkedTriangleCollection.TriangleFlagDeepWater) != 0)
 					return true;
 				else
@@ -663,12 +777,15 @@ namespace Pather.Graph {
 
 		public Path CreatePath(Spot from, Spot to, Location realDst,
 							   float minHowClose, bool AllowInvented,
-							   ILocationHeuristics locationHeuristics) {
+							   ILocationHeuristics locationHeuristics)
+		{
 
 			Spot newTo = search(from, to, realDst, minHowClose, AllowInvented,
 								locationHeuristics);
-			if (newTo != null) {
-				if (newTo.GetDistanceTo(to) <= minHowClose) {
+			if (newTo != null)
+			{
+				if (newTo.GetDistanceTo(to) <= minHowClose)
+				{
 					List<Spot> path = FollowTraceBack(from, newTo);
 					return new Path(path);
 				}
@@ -677,42 +794,52 @@ namespace Pather.Graph {
 		}
 
 		public Path CreatePath(Location fromLoc, Location toLoc,
-							   float howClose) {
+							   float howClose)
+		{
 			return CreatePath(fromLoc, toLoc, howClose, null);
 		}
 
 		public Path CreatePath(Location fromLoc, Location toLoc,
 							   float howClose,
-							   ILocationHeuristics locationHeuristics) {
+							   ILocationHeuristics locationHeuristics)
+		{
 			GSpellTimer t = new GSpellTimer(0);
 			Spot from = FindClosestSpot(fromLoc, MinStepLength);
 			Spot to = FindClosestSpot(toLoc, MinStepLength);
 
-			if (from == null) {
+			if (from == null)
+			{
 				from = AddAndConnectSpot(new Spot(fromLoc));
 			}
-			if (to == null) {
+			if (to == null)
+			{
 				to = AddAndConnectSpot(new Spot(toLoc));
 			}
 
 			Path rawPath = CreatePath(from, to, to.location, howClose, true, locationHeuristics);
 
 
-			if (rawPath != null && paint != null) {
+			if (rawPath != null && paint != null)
+			{
 				Location prev = null;
-				for (int i = 0; i < rawPath.Count(); i++) {
+				for (int i = 0; i < rawPath.Count(); i++)
+				{
 					Location l = rawPath.Get(i);
 					paint.AddBigMarker(l.X, l.Y, l.Z);
-					if (prev != null) {
+					if (prev != null)
+					{
 						paint.PaintPath(l.X, l.Y, l.Z + 3, prev.X, prev.Y, prev.Z + 3);
 					}
 					prev = l;
 				}
 			}
 			PPather.WriteLine("CreatePath took " + -t.TicksLeft);
-			if (rawPath == null) {
+			if (rawPath == null)
+			{
 				return null;
-			} else {
+			}
+			else
+			{
 				Location last = rawPath.GetLast();
 				if (last.GetDistanceTo(toLoc) > 1.0)
 					rawPath.AddLast(toLoc);
@@ -720,7 +847,8 @@ namespace Pather.Graph {
 			return rawPath;
 		}
 
-		private void Log(String s) {
+		private void Log(String s)
+		{
 			//Console.WriteLine(s); 
 			PPather.WriteLine(s);
 		}

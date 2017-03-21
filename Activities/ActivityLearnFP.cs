@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -30,20 +30,25 @@ using Pather.Helpers.UI;
 // Started adding a bit more documentation to my scripts
 // for people who like to look through them ^_^ - Flix
 
-namespace Pather.Activities {
-	public class ActivityLearnFP : Activity {
+namespace Pather.Activities
+{
+	public class ActivityLearnFP : Activity
+	{
 		GUnit npc;
 
 		public ActivityLearnFP(Task t, GUnit npc)
-			: base(t, "LearnFP") {
+			: base(t, "LearnFP")
+		{
 			this.npc = npc;
 		}
 
-		public override Location GetLocation() {
+		public override Location GetLocation()
+		{
 			return null; // I will not move
 		}
 
-		public override bool Do() {
+		public override bool Do()
+		{
 			Functions.Interact(npc);
 			Thread.Sleep(1000); // Give it a sec in case of lag.
 			if (TaxiFrame.IsVisible()) // Huh, we must already know this flightpath

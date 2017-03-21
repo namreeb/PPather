@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -27,38 +27,44 @@ using Pather.Tasks;
 using Pather.Graph;
 using Pather.Parser;
 
-namespace Pather.Activities {
-	public class ActivityApproach : Activity {
+namespace Pather.Activities
+{
+	public class ActivityApproach : Activity
+	{
 		private GUnit monster;
 		private EasyMover em;
 		private Location to;
 		private float howClose;
 		private bool UseMount;
-		public EasyMover.MoveResult MoveResult = EasyMover.MoveResult.Moving;  
+		public EasyMover.MoveResult MoveResult = EasyMover.MoveResult.Moving;
 
 		public ActivityApproach(Task t, GUnit monster, float howClose, bool UseMount)
-			: base(t, "Approach " + monster.Name) {
+			: base(t, "Approach " + monster.Name)
+		{
 			this.monster = monster;
 			this.howClose = howClose;
 			this.UseMount = UseMount;
 		}
 
-		public override Location GetLocation() {
+		public override Location GetLocation()
+		{
 			return new Location(monster.Location);
 		}
 
-		public override void Start() {
+		public override void Start()
+		{
 			// Create a path
 			to = GetLocation();
 			em = new EasyMover(ppather, to, false, true);
 		}
 
-		GSpellTimer tabSpam = new GSpellTimer(600); 
+		GSpellTimer tabSpam = new GSpellTimer(600);
 		GSpellTimer updateTimer = new GSpellTimer(5000);
 		float mountRange = PPather.PatherSettings.MountRange;
-		public override bool Do() 
+		public override bool Do()
 		{
-			if (em == null) return true; // WTF!
+			if (em == null)
+				return true; // WTF!
 
 			// mount if we're really far away
 			if (monster.DistanceToSelf >= mountRange)
@@ -74,28 +80,30 @@ namespace Pather.Activities {
 				}
 			}
 
-			if (GContext.Main.Me.Target != monster && 
-				tabSpam.IsReady && 
+			if (GContext.Main.Me.Target != monster &&
+				tabSpam.IsReady &&
 				monster.DistanceToSelf < 50f &&
-				monster.Reaction != GReaction.Friendly) 
+				monster.Reaction != GReaction.Friendly)
 			{
 				GContext.Main.SendKey("Common.Target");
 				tabSpam.Reset();
 			}
 
 			if (GetLocation().GetDistanceTo(to) > GContext.Main.MeleeDistance &&
-				monster.DistanceToSelf < 30f || updateTimer.IsReady) {
+				monster.DistanceToSelf < 30f || updateTimer.IsReady)
+			{
 				// need a new path, monster moved
 				to = GetLocation();
 				em = new EasyMover(ppather, to, false, true);
-				updateTimer.Reset(); 
+				updateTimer.Reset();
 			}
 
 			MoveResult = em.move(howClose);
-			if (MoveResult != EasyMover.MoveResult.Moving) return true; // done, can't do more
+			if (MoveResult != EasyMover.MoveResult.Moving)
+				return true; // done, can't do more
 
 			Location meLocation = new Location(GContext.Main.Me.Location);
-			if (meLocation.GetDistanceTo(to) < howClose) 
+			if (meLocation.GetDistanceTo(to) < howClose)
 			{
 				PPather.mover.Stop();
 				Helpers.Mount.Dismount();
@@ -105,11 +113,13 @@ namespace Pather.Activities {
 			return false;
 		}
 
-		public EasyMover.MoveResult GetMoveResult() {
+		public EasyMover.MoveResult GetMoveResult()
+		{
 			return MoveResult;
 		}
 
-		public override void Stop() {
+		public override void Stop()
+		{
 			PPather.mover.Stop();
 			em = null;
 

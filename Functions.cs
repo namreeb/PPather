@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 using System;
@@ -33,6 +33,7 @@ namespace Pather
 {
 	public class Functions
 	{
+
 		static PatherForm form = PPather.form;
 
 		public static string GenFormTitle(int size)
@@ -47,6 +48,16 @@ namespace Pather
 			}
 			return builder.ToString().ToLower();
 		}
+		
+		public static string GetTaskFilePath()
+		{
+			string fullpath = PPather.PatherSettings.TaskFile;
+			string[] parts = fullpath.Split('\\');
+			string taskname = parts[(parts.Length - 1)];
+			fullpath = fullpath.Substring(0,
+											(fullpath.Length - taskname.Length));
+			return fullpath;
+		}
 		#region Cursor Hook Stuff
 
 		#region ClickRepairButton
@@ -57,6 +68,20 @@ namespace Pather
 			{
 				GContext.Main.EnableCursorHook();
 				repr.ClickRepairButton();
+				GContext.Main.DisableCursorHook();
+			}
+		}
+
+		#endregion
+
+		#region Closeit
+
+		public static void Closeit(GMerchant close)
+		{
+			if (close != null && close.IsRepairVisible)
+			{
+				GContext.Main.EnableCursorHook();
+				close.Close();
 				GContext.Main.DisableCursorHook();
 			}
 		}
@@ -91,7 +116,7 @@ namespace Pather
 
 		public static void Hover(GNode u)
 		{
-			if (u != null && u.IsValid)
+			if (u != null)
 			{
 				GContext.Main.EnableCursorHook();
 				u.Hover();
@@ -111,7 +136,7 @@ namespace Pather
 
 		public static void Hover(GUnit u)
 		{
-			if (u != null && u.IsValid)
+			if (u != null)
 			{
 				GContext.Main.EnableCursorHook();
 				u.Hover();
@@ -125,7 +150,7 @@ namespace Pather
 
 		public static void Interact(GUnit u)
 		{
-			if (u != null && u.IsValid)
+			if (u != null)
 			{
 				GContext.Main.EnableCursorHook();
 				u.Interact();
@@ -135,7 +160,7 @@ namespace Pather
 
 		public static void Interact(GNode u)
 		{
-			if (u != null && u.IsValid)
+			if (u != null)
 			{
 				GContext.Main.EnableCursorHook();
 				u.Interact();

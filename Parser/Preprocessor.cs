@@ -35,13 +35,16 @@ namespace Pather.Parser
 			this.reader = this.reader = File.OpenText(basePath + file);
 			this.lines = lines;
 			this.conditions = conditions;
-			
+
 			process();
 		}
 
 		public Stream ProcessedStream
 		{
-			get { return this.memStream; }
+			get
+			{
+				return this.memStream;
+			}
 		}
 
 		private void process()
@@ -58,7 +61,9 @@ namespace Pather.Parser
 					{
 						arg = line.Substring(line.IndexOf('<') + 1, line.IndexOf('>') - line.IndexOf('<') - 1);
 					}
-					catch (Exception) { } // preprocess that don't have args
+					catch (Exception)
+					{
+					} // preprocess that don't have args
 				}
 
 

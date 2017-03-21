@@ -34,9 +34,9 @@ namespace Pather.Tasks
 		public List<string> GetTalents()
 		{
 			Value tVal = nodetask.GetValueOfId("Talents");
-			if (tVal == null) 
+			if (tVal == null)
 				return null;
-			return tVal.GetStringCollectionValues();			
+			return tVal.GetStringCollectionValues();
 		}
 
 		public override string ToString()
@@ -51,7 +51,7 @@ namespace Pather.Tasks
 
 		public override bool WantToDoSomething()
 		{
-			if ( TalentFrame.HasPoints() )
+			if (TalentFrame.HasPoints())
 				return true;
 			return false;
 		}
@@ -64,7 +64,7 @@ namespace Pather.Tasks
 
 		public override bool ActivityDone(Activity task)
 		{
-			if (task == this.activity && task is ActivityTalents )
+			if (task == this.activity && task is ActivityTalents)
 			{
 				if (!((ActivityTalents)task).HasNext())
 					this.isDone = true;

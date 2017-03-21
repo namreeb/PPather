@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 using System;
@@ -35,11 +35,13 @@ using Pather.Parser;
 using Pather.Helpers.UI;
 using WowTriangles;
 
-namespace Pather {
-	public abstract class PPather : GGameClass {
+namespace Pather
+{
+	public abstract class PPather : GGameClass
+	{
 		public const double PI = Math.PI;
 
-		public const string VERSION = "1.0.3d";
+		public const string VERSION = "1.0.4";
 
 		public static Random random = new Random();
 		public static Mover mover;
@@ -56,7 +58,12 @@ namespace Pather {
 		public static PathGraph world = null;
 		Spot WasAt = null;
 
-		public enum RunState_e { Stopped, Paused, Running };
+		public enum RunState_e
+		{
+			Stopped,
+			Paused,
+			Running
+		};
 		public RunState_e RunState = RunState_e.Stopped;
 		public RunState_e WantedState = RunState_e.Stopped;
 		public NPCDatabase NPCs = new NPCDatabase();
@@ -86,7 +93,8 @@ namespace Pather {
 
 		// subclass constructors must call this constructor via base()
 		public PPather()
-			: base() {
+			: base()
+		{
 			RegisterTasks();
 			RootNode.Init();
 			PatherSettings = Settings.Load();
@@ -103,7 +111,8 @@ namespace Pather {
 		/// be used instead without "Task" at the end of the name, which
 		/// is the desired behavior for most of the parser tasks.
 		/// </summary>
-		private void RegisterTasks() {
+		private void RegisterTasks()
+		{
 			ParserTask.registeredTasks.Clear();
 
 			Type taskType = typeof(ParserTask);
@@ -114,17 +123,23 @@ namespace Pather {
 			SortedList<string, Type> internalTypes = new SortedList<string, Type>();
 			SortedList<string, Type> userTypes = new SortedList<string, Type>();
 
-			foreach (Type t in cur.GetTypes()) {
-				if (t.IsSubclassOf(taskType) && !t.IsAbstract) {
+			foreach (Type t in cur.GetTypes())
+			{
+				if (t.IsSubclassOf(taskType) && !t.IsAbstract)
+				{
 					internalTypes[t.FullName] = t;
 				}
 			}
 
-			foreach (Assembly a in allAsms) {
-				if (a == cur) continue; // already did them
+			foreach (Assembly a in allAsms)
+			{
+				if (a == cur)
+					continue; // already did them
 
-				foreach (Type t in a.GetTypes()) {
-					if (t.IsSubclassOf(taskType) && !t.IsAbstract) {
+				foreach (Type t in a.GetTypes())
+				{
+					if (t.IsSubclassOf(taskType) && !t.IsAbstract)
+					{
 						userTypes[t.FullName] = t;
 					}
 				}
@@ -134,26 +149,35 @@ namespace Pather {
 			allTypes.AddRange(internalTypes.Values);
 			allTypes.AddRange(userTypes.Values);
 
-			foreach (Type t in allTypes) {
-				try {
+			foreach (Type t in allTypes)
+			{
+				try
+				{
 					FieldInfo f = t.GetField("ParserKeyword");
 					string s = "";
 
-					if (null != f) {
+					if (null != f)
+					{
 						s = f.GetValue(null).ToString();
-					} else {
+					}
+					else
+					{
 						// if the field doesn't exist, use the class name
 						int index = t.Name.LastIndexOf("Task");
 						s = index >= 0 ? t.Name.Substring(0, index) : t.Name;
 					}
 
-					foreach (string ss in s.Split(',')) {
+					foreach (string ss in s.Split(','))
+					{
 						String sss = ss.Trim(); /// :rolleyes: @ C#
 
 						if (sss != "")
 							ParserTask.RegisterTask(sss, t);
 					}
-				} catch (Exception) { }
+				}
+				catch (Exception)
+				{
+				}
 			}
 			//string str = "Built-in Tasks: ";
 
@@ -182,8 +206,10 @@ namespace Pather {
 
 
 
-		public override string DisplayName {
-			get {
+		public override string DisplayName
+		{
+			get
+			{
 				return VERSION;
 			}
 		}
@@ -193,42 +219,52 @@ namespace Pather {
 
 		private Dictionary<string, GSpellTimer> blacklisted = new Dictionary<string, GSpellTimer>();
 
-		public void Blacklist(string name, int howlong_seconds) {
+		public void Blacklist(string name, int howlong_seconds)
+		{
 			GSpellTimer t = null;
-			if (blacklisted.TryGetValue(name, out t)) {
+			if (blacklisted.TryGetValue(name, out t))
+			{
 				blacklisted.Remove(name);
 			}
 			t = new GSpellTimer(howlong_seconds * 1000);
 			blacklisted.Add(name, t);
 			PPather.WriteLine("Blacklisted " + name + " for " + howlong_seconds + "s");
 		}
-		public void Blacklist(long GUID, int howlong_seconds) {
+		public void Blacklist(long GUID, int howlong_seconds)
+		{
 			Blacklist("GUID" + GUID, howlong_seconds);
 		}
 
-		public void Blacklist(GUnit unit) {
+		public void Blacklist(GUnit unit)
+		{
 			Blacklist(unit.GUID, 15 * 60); // 15 minutes
 		}
-		public void Blacklist(GUnit unit, int howlong_seconds) {
+		public void Blacklist(GUnit unit, int howlong_seconds)
+		{
 			Blacklist(unit.GUID, howlong_seconds);
 		}
-		public void Blacklist(String name) {
+		public void Blacklist(String name)
+		{
 			Blacklist(name, 15 * 60); // 15 minutes
 		}
 
-		public void UnBlacklist(string name) {
+		public void UnBlacklist(string name)
+		{
 			blacklisted.Remove(name);
 			PPather.WriteLine("Un-Blacklisted " + name);
 		}
-		public void UnBlacklist(long GUID) {
+		public void UnBlacklist(long GUID)
+		{
 			UnBlacklist("GUID" + GUID);
 		}
 
-		public void UnBlacklist(GUnit u) {
+		public void UnBlacklist(GUnit u)
+		{
 			UnBlacklist(u.GUID);
 		}
 
-		public bool IsBlacklisted(string name) {
+		public bool IsBlacklisted(string name)
+		{
 			GSpellTimer t = null;
 			if (!blacklisted.TryGetValue(name, out t))
 				return false;
@@ -236,54 +272,65 @@ namespace Pather {
 			return !t.IsReady;
 		}
 
-		public bool IsBlacklisted(long GUID) {
+		public bool IsBlacklisted(long GUID)
+		{
 			return IsBlacklisted("GUID" + GUID);
 		}
 
-		public bool IsBlacklisted(GUnit unit) {
+		public bool IsBlacklisted(GUnit unit)
+		{
 			return IsBlacklisted(unit.GUID);
 		}
 
 		#endregion
 
 
-		public void Killed(GUnit unit) {
+		public void Killed(GUnit unit)
+		{
 			//PPather.WriteLine("Killed unit " + unit.Name);
 			Kills++;
 		}
 
-		public void TargetIs(GUnit unit) {
+		public void TargetIs(GUnit unit)
+		{
 			form.SetTarget(unit);
 		}
 
 
-		public void Looted(GUnit unit) {
+		public void Looted(GUnit unit)
+		{
 			//PPather.WriteLine("Looted unit " + unit.Name);
 			Loots++;
 		}
 
-		public void PickedUp(GNode node) {
+		public void PickedUp(GNode node)
+		{
 			//PPather.WriteLine("Picked up node " + node.Name);
 			Harvests++;
 		}
 
-		public override void LoadConfig() {
+		public override void LoadConfig()
+		{
 		}
 
-		public override void CreateDefaultConfig() {
+		public override void CreateDefaultConfig()
+		{
 		}
 
-		void Pather_ChatLog(string RawText, string ParsedText) {
+		void Pather_ChatLog(string RawText, string ParsedText)
+		{
 
 			if (ParsedText.Contains("The Horde wins!") ||
 					  ParsedText.Contains("The battle has ended") ||
-					  ParsedText.Contains("The Alliance wins!")) {
+					  ParsedText.Contains("The Alliance wins!"))
+			{
 				PPather.WriteLine("BG ended: " + ParsedText);
 				//                Context.KillAction("BG ended", false);
 			}
 		}
 
-		public string CombatLogCleaner(string raw) {
+		public string CombatLogCleaner(string raw)
+		{
 			StringBuilder sb = new StringBuilder();
 
 			/*
@@ -293,22 +340,31 @@ namespace Pather {
 			 * */
 
 			int len = raw.Length;
-			for (int i = 0; i < len; i++) {
+			for (int i = 0; i < len; i++)
+			{
 				char c = raw[i];
-				if (c == '|') {
+				if (c == '|')
+				{
 					c = raw[++i];
-					if (c == 'H') {
-						while (raw[i++] != '|') ;
+					if (c == 'H')
+					{
+						while (raw[i++] != '|')
+							;
 						i++; // skip the 'h'
-						while (raw[i] != '|') sb.Append(raw[i++]);
+						while (raw[i] != '|')
+							sb.Append(raw[i++]);
 						i++; // skip the 'r'
 
-					} else if (c == 'c') {
+					}
+					else if (c == 'c')
+					{
 						i += 9;
-						while (raw[i] != '|') sb.Append(raw[i++]);
+						while (raw[i] != '|')
+							sb.Append(raw[i++]);
 						i++; // skip the 'r'
 					}
-				} else
+				}
+				else
 					sb.Append(c);
 			}
 
@@ -321,19 +377,25 @@ Toon has slain Venomtail Scorpid!
 Toon's Lightning Bolt hits Venomtail Scorpid for 1141 Nature.
 Venomtail Scorpid died.
 		 * */
-		void Pather_CombatLog(string rawText) {
-			if (rawText == null) return;
+		void Pather_CombatLog(string rawText)
+		{
+			if (rawText == null)
+				return;
 			string text = CombatLogCleaner(rawText);
 			string myname = GContext.Main.Me.Name;
-			if (text.StartsWith(myname) && text.Contains(" has slain ")) {
+			if (text.StartsWith(myname) && text.Contains(" has slain "))
+			{
 				int start = text.IndexOf(" has slain ") + 11;
 				int end = text.IndexOf("!");
 				String mob = text.Substring(start, end - start);
 				PPather.WriteLine("Killed mob: " + mob);
-				if (CurrentPullTask != null) {
+				if (CurrentPullTask != null)
+				{
 					CurrentPullTask.KilledMob(mob);
 					PPather.WriteLine(CurrentPullTask.ToString());
-				} else {
+				}
+				else
+				{
 					PPather.WriteLine("No Pull Task");
 				}
 
@@ -341,13 +403,22 @@ Venomtail Scorpid died.
 
 		}
 
-		public string GetCurrentLocation() {
-			GLocation loc = GContext.Main.Me.Location;
-			if (loc == null) return null;
-			return (string.Format(PPather.numberFormat, "[{0,2:#0.0}, {1,2:#0.0}, {2,2:#0.0}]", loc.X, loc.Y, loc.Z));
+		public string GetCurrentLocation()
+		{
+            try
+            {
+                GLocation loc = GContext.Main.Me.Location;
+                if (loc == null)
+                    return null;
+                return (string.Format(PPather.numberFormat, "[{0,2:#0.0}, {1,2:#0.0}, {2,2:#0.0}]", loc.X, loc.Y, loc.Z));
+            }
+            catch (Exception)
+            {
+                return null;
+            }
 		}
 
-		public override void OnStartGlide() 
+		public override void OnStartGlide()
 		{
 			Stopped = false;
 			Helpers.Inventory.ReadyItemCacheTimer();
@@ -383,7 +454,8 @@ Venomtail Scorpid died.
 							PPather.PatherSettings.StopAtLevel.ToString());
 
 			if (CurrentContinent.StartsWith("PVPZone") ||
-				CurrentContinent == "NetherstormBG") {
+				CurrentContinent == "NetherstormBG")
+			{
 				BGMode = true;
 			}
 
@@ -393,8 +465,10 @@ Venomtail Scorpid died.
 				throw new Exception("StormLib.dll wasn't found! Make sure it's in the PPather folder!");
 
 			string myFaction = "Unknown";
-			if (IsHordePlayerFaction(Me)) myFaction = "Horde";
-			if (IsAlliancePlayerFaction(Me)) myFaction = "Alliance";
+			if (IsHordePlayerFaction(Me))
+				myFaction = "Horde";
+			if (IsAlliancePlayerFaction(Me))
+				myFaction = "Alliance";
 			NPCs.SetContinent(CurrentContinent, myFaction);
 			ToonData.SetToonName(Me.Name);
 
@@ -405,17 +479,21 @@ Venomtail Scorpid died.
 			world = new PathGraph(CurrentContinent, triangleWorld, null);
 		}
 
-		private void SaveAllState() {
+		private void SaveAllState()
+		{
 			NPCs.Save();
 			ToonData.Save();
-			if (world != null) {
+			if (world != null)
+			{
 				world.Save();
 			}
 
 		}
 
-		public override void OnStopGlide() {
-			if (Stopped) return;
+		public override void OnStopGlide()
+		{
+			if (Stopped)
+				return;
 			Stopped = true;
 
 			WantedState = RunState_e.Stopped;
@@ -443,29 +521,35 @@ Venomtail Scorpid died.
 
 			// passing true to GetTotalMemory isn't the same as calling Collect()
 			PPather.WriteLine("Memory Usage After: " + GC.GetTotalMemory(true) / (1024 * 1024) + " MB");
+
+            GContext.Main.DisableCursorHook();
+
 			base.OnStopGlide();
 		}
 
-		public override void Startup() {
+		public override void Startup()
+		{
 			mover = new Mover(Context);
 			radar = new UnitRadar();
 			form = new PatherForm(this);
 			PPather.WriteLine("!Good:PPather Startup - Version " + VERSION);
 			form.ShowInTaskbar = false;
-			form.Show();			
+			form.Show();
 			base.Startup();
 			GContext.Main.ChatLog += new GContext.GChatLogHandler(Pather_ChatLog);
 			GContext.Main.CombatLog += new GContext.GCombatLogHandler(Pather_CombatLog);
 		}
 
-		public override void Shutdown() {
+		public override void Shutdown()
+		{
 			GContext.Main.CombatLog -= new GContext.GCombatLogHandler(Pather_CombatLog);
 			GContext.Main.ChatLog -= new GContext.GChatLogHandler(Pather_ChatLog);
 			form.Dispose();
 			base.Shutdown();
 		}
 
-		public override void Patrol() {
+		public override void Patrol()
+		{
 			OnStartGlide();
 
 			Kills = 0;
@@ -479,23 +563,29 @@ Venomtail Scorpid died.
 			if (!Me.IsInCombat && !Me.IsDead)
 				Rest();
 
-			while (true) {
+			while (true)
+			{
 				MyPather();
 				Thread.Sleep(1000);
 			}
 		}
 
-		private void UpdateXP() {
+		private void UpdateXP()
+		{
 			XPCurrent = Me.Experience;
-			if (XPCurrent < XPInitial) {
+			if (XPCurrent < XPInitial)
+			{
 				PPather.WriteLine("!Good:Ding! Congratulations.");
 				XPInitial = Me.Experience;
 				XPCurrent = XPInitial;
 				GliderStart = new GSpellTimer(0);
-			} else {
+			}
+			else
+			{
 				double XPGained = (double)(XPCurrent - XPInitial);
 				double time = (double)(-GliderStart.TicksLeft) / 3600000.0; // hours
-				if (time != 0.0) {
+				if (time != 0.0)
+				{
 					int XpNeeded = Me.NextLevelExperience - Me.Experience;
 					int XPPerHour = (int)(XPGained / time);
 					KPh = (int)((double)Kills / time);
@@ -510,18 +600,22 @@ Venomtail Scorpid died.
 
 		private GSpellTimer ChunkLoadT = new GSpellTimer(5000, true);
 
-		public void ResetMyPos() {
+		public void ResetMyPos()
+		{
 			WasAt = null;
 		}
 
-		public void UpdateMyPos() {
+		public void UpdateMyPos()
+		{
 			radar.Update();
-			if (world != null) {
+			if (world != null)
+			{
 				GLocation loc = GContext.Main.Me.Location;
 				Location isAt = new Location(loc.X, loc.Y, loc.Z);
 				//if(WasAt != null)  PPather.WriteLine("was " + WasAt.location);
 				//PPather.WriteLine("isAt " + isAt); 
-				if (WasAt != null) {
+				if (WasAt != null)
+				{
 					if (WasAt.GetLocation().GetDistanceTo(isAt) > 20)
 						WasAt = null;
 				}
@@ -529,7 +623,8 @@ Venomtail Scorpid died.
 			}
 		}
 
-		public static string GetQuestStatus(string quest) {
+		public static string GetQuestStatus(string quest)
+		{
 			string val = ToonData.Get("Quest:" + quest);
 			return val;
 		}
@@ -541,68 +636,102 @@ Venomtail Scorpid died.
 		//  completed  - completed and handed in
 		//  completedr - completed but repeatable
 
-		public void QuestAccepted(string name) {
+		public void QuestAccepted(string name)
+		{
 			PPather.WriteLine("!Info:Quest accepted: '" + name + "'");
 			ToonData.Set("Quest:" + name, "accepted");
 		}
 
-		public void QuestFailed(string name) {
+		public void QuestFailed(string name)
+		{
 			PPather.WriteLine("!Info:Quest failed: '" + name + "'");
 			ToonData.Set("Quest:" + name, "failed");
 		}
 
-		public void QuestGoalDone(string name) {
+		public void QuestGoalDone(string name)
+		{
 			PPather.WriteLine("!Info:Quest goal done: '" + name + "'");
 			ToonData.Set("Quest:" + name, "goaldone");
 		}
 
-		public void QuestCompleted(string name, bool repeat) {
+		public void QuestCompleted(string name, bool repeat)
+		{
 			PPather.WriteLine("!Info:Quest completed: '" + name + "'");
 			ToonData.Set("Quest:" + name, "completed" + ((repeat) ? "r" : ""));
 		}
 
+        public void SetToonState(string key, string value) 
+        { 
+                PPather.WriteLine("!Info:Saved toon state variable: \"" + key + "\" with state: " + value); 
+                ToonData.Set(key, value); 
+        } 
+
+        public static string GetToonState(string key) 
+        { 
+                string val = ToonData.Get(key); 
+                return val; 
+        } 
+
 		// completed or failed
-		public bool IsQuestDone(string name) {
+		public bool IsQuestDone(string name)
+		{
 			string val = ToonData.Get("Quest:" + name);
-			if (val == null) return false;
-			if (val == "completedr") return false;
-			if (val == "failed" || val == "completed") return true;
+			if (val == null)
+				return false;
+			if (val == "completedr")
+				return false;
+			if (val == "failed" || val == "completed")
+				return true;
 			return false;
 		}
 
-		public bool IsQuestFailed(string name) {
+		public bool IsQuestFailed(string name)
+		{
 			string val = ToonData.Get("Quest:" + name);
-			if (val == null) return false;
-			if (val == "failed") return true;
+			if (val == null)
+				return false;
+			if (val == "failed")
+				return true;
 			return false;
 		}
 
-		public bool IsQuestAccepted(string name) {
+		public bool IsQuestAccepted(string name)
+		{
 			string val = ToonData.Get("Quest:" + name);
-			if (val == null) return false;
-			if (val == "accepted") return true;
+			if (val == null)
+				return false;
+			if (val == "accepted")
+				return true;
 			return false;
 		}
 
-		public bool IsQuestGoalDone(string name) {
+		public bool IsQuestGoalDone(string name)
+		{
 			string val = ToonData.Get("Quest:" + name);
-			if (val == null) return false;
-			if (val == "goaldone") return true;
+			if (val == null)
+				return false;
+			if (val == "goaldone")
+				return true;
 			return false;
 		}
 
 		// Called by gui thread
-		public void UpdateNPCs() {
-			if (NPCs == null) return;
+		public void UpdateNPCs()
+		{
+			if (NPCs == null)
+				return;
 
 			NPCs.Update();
 		}
 
-		public List<GMonster> CheckForMobsAtLoc(GLocation l, float radius) {
+		public List<GMonster> CheckForMobsAtLoc(GLocation l, float radius)
+		{
 			List<GMonster> returns = new List<GMonster>();
 			GMonster[] mobs = GObjectList.GetMonsters();
-			if (mobs.Length > 0) {
-				foreach (GMonster mob in mobs) {
+			if (mobs.Length > 0)
+			{
+				foreach (GMonster mob in mobs)
+				{
 					float mdt = mob.GetDistanceTo(l);
 					if (mdt <= radius && !mob.IsDead && !mob.IsTagged)
 						returns.Add(mob);
@@ -611,15 +740,19 @@ Venomtail Scorpid died.
 			return returns;
 		}
 
-		public Location FindNPCLocation(string name) {
-			if (NPCs == null) return null;
+		public Location FindNPCLocation(string name)
+		{
+			if (NPCs == null)
+				return null;
 			NPCDatabase.NPC npc = NPCs.Find(name);
 			//PPather.WriteLine("found '" + name + "' or? " + npc);
-			if (npc == null) return null;
+			if (npc == null)
+				return null;
 			return new Location(npc.location);
 		}
 
-		public GLocation PredictedLocation(GUnit mob) {
+		public GLocation PredictedLocation(GUnit mob)
+		{
 			GLocation currentLocation = mob.Location;
 			double x = currentLocation.X;
 			double y = currentLocation.Y;
@@ -638,8 +771,10 @@ Venomtail Scorpid died.
 			return closestLocatition;
 		}
 
-		public static bool IsStupidItem(GUnit unit) {
-			if (unit.CreatureType == GCreatureType.Totem) return true;
+		public static bool IsStupidItem(GUnit unit)
+		{
+			if (unit.CreatureType == GCreatureType.Totem)
+				return true;
 			// Filter out all stupid sting found in outland
 			string name = unit.Name.ToLower();
 			if (name.Contains("target") || name.Contains("trigger") ||
@@ -651,15 +786,18 @@ Venomtail Scorpid died.
 			return false;
 		}
 
-		public bool IsItSafeAt(GUnit ignore, GUnit u) {
+		public bool IsItSafeAt(GUnit ignore, GUnit u)
+		{
 			return IsItSafeAt(ignore, u.Location);
 		}
 
-		public bool IsItSafeAt(GUnit ignore, Location l) {
+		public bool IsItSafeAt(GUnit ignore, Location l)
+		{
 			return IsItSafeAt(ignore, new GLocation(l.X, l.Y, l.Z));
 		}
 
-		public bool IsItSafeAt(GUnit ignore, GLocation l) {
+		public bool IsItSafeAt(GUnit ignore, GLocation l)
+		{
 			/*List<GMonster> mobs = CheckForMobsAtLoc(l, 30.0f); // Setting for radius?
 			foreach (GMonster mob in mobs) {
 				if (mob != (GMonster)ignore &&
@@ -672,7 +810,8 @@ Venomtail Scorpid died.
 			return true;
 		}
 
-		public double DistanceToClosestHostileFrom(GUnit target) {
+		public double DistanceToClosestHostileFrom(GUnit target)
+		{
 
 			GMonster m = GObjectList.GetNearestHostile(target.Location, target.GUID, false);
 			if (m != null)
@@ -681,12 +820,15 @@ Venomtail Scorpid died.
 				return 1E100;
 		}
 
-		public GPlayer GetClosestPvPPlayer() {
+		public GPlayer GetClosestPvPPlayer()
+		{
 			GPlayer[] plys = GObjectList.GetPlayers();
 			GPlayer ClosestPlayer = null;
 
-			foreach (GPlayer p in plys) {
-				if (!p.IsSameFaction && !p.IsDead && p.Location.Z > Me.Location.Z - 5 && p.Location.Z < Me.Location.Z + 5) {
+			foreach (GPlayer p in plys)
+			{
+				if (!p.IsSameFaction && !p.IsDead && p.Location.Z > Me.Location.Z - 5 && p.Location.Z < Me.Location.Z + 5)
+				{
 					double d = p.GetDistanceTo(Me);
 					if ((ClosestPlayer == null || d < ClosestPlayer.GetDistanceTo(Me)))
 						ClosestPlayer = p;
@@ -695,12 +837,15 @@ Venomtail Scorpid died.
 			return ClosestPlayer;
 		}
 
-		public GPlayer GetClosestPvPPlayerAttackingMe() {
+		public GPlayer GetClosestPvPPlayerAttackingMe()
+		{
 			GPlayer[] plys = GObjectList.GetPlayers();
 			GPlayer ClosestPlayer = null;
 
-			foreach (GPlayer p in plys) {
-				if (!p.IsSameFaction && p.Target == Me) {
+			foreach (GPlayer p in plys)
+			{
+				if (!p.IsSameFaction && p.Target == Me)
+				{
 					if (ClosestPlayer == null || p.GetDistanceTo(Me) < ClosestPlayer.GetDistanceTo(Me))
 						ClosestPlayer = p;
 				}
@@ -708,12 +853,15 @@ Venomtail Scorpid died.
 			return ClosestPlayer;
 		}
 
-		public GPlayer GetClosestFriendlyPlayer() {
+		public GPlayer GetClosestFriendlyPlayer()
+		{
 			GPlayer[] plys = GObjectList.GetPlayers();
 			GPlayer ClosestPlayer = null;
 
-			foreach (GPlayer p in plys) {
-				if (p.IsSameFaction && p != Me) {
+			foreach (GPlayer p in plys)
+			{
+				if (p.IsSameFaction && p != Me)
+				{
 					if (ClosestPlayer == null || p.GetDistanceTo(Me) < ClosestPlayer.GetDistanceTo(Me))
 						ClosestPlayer = p;
 				}
@@ -721,50 +869,71 @@ Venomtail Scorpid died.
 			return ClosestPlayer;
 		}
 
-		public GUnit FindAttacker() {
+		public GUnit FindAttacker()
+		{
 			// Find attackers
 			GUnit attacker = GObjectList.GetNearestAttacker(0);
-			if (attacker != null) {
-				if (attacker.IsPlayer) {
+			if (attacker != null)
+			{
+				if (attacker.IsPlayer)
+				{
 					// hmmm
 					if (attacker.IsInCombat &&
 						attacker.Target != null &&
-						attacker.Target == GContext.Main.Me) {
+						attacker.Target == GContext.Main.Me)
+					{
 						// looks like this sucker is attacking me!
 						return attacker;
 					}
-				} else {
+				}
+				else
+				{
 					return attacker; // a monster
 				}
 			}
 			return null;
 		}
 
-		public bool Face(GUnit monster) {
+		public bool Face(GUnit monster)
+		{
 			return Face(monster, PI / 8);
 		}
 
-		public bool Face(GNode node) {
+		public bool Face(GNode node)
+		{
 			return Face(node, PI / 8);
 		}
 
-		public bool Face(GUnit monster, double tolerance) {
+		public bool Face(GUnit monster, double tolerance)
+		{
 			int timeout = 3000;
-			if (monster == null) return false;
+			if (monster == null)
+				return false;
 			GSpellTimer approachTimeout = new GSpellTimer(timeout, false);
-			if (Math.Abs(monster.Bearing) < tolerance) return true;
+			if (Math.Abs(monster.Bearing) < tolerance)
+				return true;
 			bool wasDead = monster.IsDead;
-			do {
-				if (Me.IsDead || wasDead != monster.IsDead) { mover.Stop(); return false; }
+			do
+			{
+				if (Me.IsDead || wasDead != monster.IsDead)
+				{
+					mover.Stop();
+					return false;
+				}
 
 				double b = monster.Bearing;
-				if (b < -tolerance) {
+				if (b < -tolerance)
+				{
 					// to the left
 					mover.RotateLeft(true);
-				} else if (b > tolerance) {
+				}
+				else if (b > tolerance)
+				{
 					// to the rigth
 					mover.RotateRight(true);
-				} else {
+				}
+				else
+				{
 					// ahead
 					mover.Stop();
 					return true;
@@ -779,25 +948,39 @@ Venomtail Scorpid died.
 
 		}
 
-		public bool Face(GNode monster, double tolerance) {
+		public bool Face(GNode monster, double tolerance)
+		{
 
-			if (monster == null) return false;
+			if (monster == null)
+				return false;
 			int timeout = 3000;
 
-			if (mover == null) return false;
+			if (mover == null)
+				return false;
 			GSpellTimer approachTimeout = new GSpellTimer(timeout, false);
-			if (Math.Abs(monster.Location.Bearing) < tolerance) return true;
-			do {
-				if (Me.IsDead) { mover.Stop(); return false; }
+			if (Math.Abs(monster.Location.Bearing) < tolerance)
+				return true;
+			do
+			{
+				if (Me.IsDead)
+				{
+					mover.Stop();
+					return false;
+				}
 
 				double b = monster.Location.Bearing;
-				if (b < -tolerance) {
+				if (b < -tolerance)
+				{
 					// to the left
 					mover.RotateLeft(true);
-				} else if (b > tolerance) {
+				}
+				else if (b > tolerance)
+				{
 					// to the rigth
 					mover.RotateRight(true);
-				} else {
+				}
+				else
+				{
 					// ahead
 					mover.Stop();
 					return true;
@@ -812,21 +995,29 @@ Venomtail Scorpid died.
 
 		}
 
-		public bool Face(PathObject obj) {
+		public bool Face(PathObject obj)
+		{
 			return Face(obj, PI / 8);
 		}
 
-		public bool Face(PathObject obj, double tolerance) {
-			if (obj.isUnit()) {
+		public bool Face(PathObject obj, double tolerance)
+		{
+			if (obj.isUnit())
+			{
 				return Face(obj.getUnit(), PI / 8);
-			} else if (obj.isNode()) {
+			}
+			else if (obj.isNode())
+			{
 				return Face(obj.getNode(), PI / 8);
-			} else {
+			}
+			else
+			{
 				throw new Exception("!Error:Couldn't assign type to : " + obj);
 			}
 		}
 
-		public static bool IsHordePlayerFaction(GUnit u) {
+		public static bool IsHordePlayerFaction(GUnit u)
+		{
 			int f = u.FactionID;
 			if (f == 2 ||
 				f == 5 ||
@@ -837,7 +1028,8 @@ Venomtail Scorpid died.
 			return false;
 		}
 
-		public static bool IsAlliancePlayerFaction(GUnit u) {
+		public static bool IsAlliancePlayerFaction(GUnit u)
+		{
 			int f = u.FactionID;
 			if (f == 1 ||
 				f == 3 ||
@@ -849,23 +1041,29 @@ Venomtail Scorpid died.
 			return false;
 		}
 
-		public static bool IsPlayerFaction(GUnit u) {
+		public static bool IsPlayerFaction(GUnit u)
+		{
 			return IsHordePlayerFaction(u) || IsAlliancePlayerFaction(u);
 		}
 
-		public bool MoveToGetThemInFront(GUnit Target, GUnit Add) {
+		public bool MoveToGetThemInFront(GUnit Target, GUnit Add)
+		{
 			double bearing = Add.Bearing;
-			if (!IsInFrontOfMe(Add)) {
+			if (!IsInFrontOfMe(Add))
+			{
 				PPather.WriteLine("Got add " + Add.Name + " behind me");
 				/*
 				  hmm, just back up? or turn a bit too?
 				*/
 
 				mover.Backwards(true);
-				if (bearing < 0) {
+				if (bearing < 0)
+				{
 					//PPather.WriteLine("  back up left");
 					mover.RotateLeft(true);
-				} else {
+				}
+				else
+				{
 					//PPather.WriteLine("  back up right");
 					mover.RotateRight(true);
 				}
@@ -879,19 +1077,24 @@ Venomtail Scorpid died.
 			return false;
 		}
 
-		public void TweakMelee(GUnit Monster) {
+		public void TweakMelee(GUnit Monster)
+		{
 			double Distance = Monster.DistanceToSelf;
 			double sensitivity = 2.5; // default melee distance is 4.8 - 2.5 = 2.3, no monster will chase us at 2.3
 			double min = Context.MeleeDistance - sensitivity;
-			if (min < 1.0) min = 1.0;
+			if (min < 1.0)
+				min = 1.0;
 
-			if (Distance > Context.MeleeDistance) {
+			if (Distance > Context.MeleeDistance)
+			{
 				// Too far
 				//Spam("Tweak forwards. "+ Distance + " > " + Context.MeleeDistance);
 				mover.Forwards(true);
 				Thread.Sleep(100);
 				mover.Forwards(false);
-			} else if (Distance < min) {
+			}
+			else if (Distance < min)
+			{
 				// Too close
 				//Spam("Tweak backwards. "+ Distance + " < " + min);
 				mover.Backwards(true);
@@ -900,26 +1103,31 @@ Venomtail Scorpid died.
 			}
 		}
 
-		double BearingToMe(GUnit unit) {
+		double BearingToMe(GUnit unit)
+		{
 			// return value from -PI to PI
 			GLocation MyLocation = Me.Location;
 			float bearing = (float)unit.GetHeadingDelta(MyLocation);
 			return bearing;
 		}
 
-		public bool IsInFrontOfMe(GUnit unit) {
+		public bool IsInFrontOfMe(GUnit unit)
+		{
 			double bearing = unit.Bearing;
 			return bearing < PI / 2.0 && bearing > -PI / 2.0;
 		}
 
-		public bool Approach(GUnit monster, bool AbortIfUnsafe) {
+		public bool Approach(GUnit monster, bool AbortIfUnsafe)
+		{
 			return Approach(monster, AbortIfUnsafe, 10000);
 		}
 
-		public bool Approach(GUnit monster, bool AbortIfUnsafe, int timeout) {
+		public bool Approach(GUnit monster, bool AbortIfUnsafe, int timeout)
+		{
 			GLocation loc = monster.Location;
 			if (loc.DistanceToSelf < Context.MeleeDistance &&
-				Math.Abs(loc.Bearing) < PI / 8) {
+				Math.Abs(loc.Bearing) < PI / 8)
+			{
 				mover.Stop();
 				return true;
 			}
@@ -931,16 +1139,19 @@ Venomtail Scorpid died.
 			EasyMover em = null;
 			GSpellTimer NewTargetUpdate = new GSpellTimer(1000);
 			bool WasInCombat = GContext.Main.Me.IsInCombat;
-			do {
+			do
+			{
 				UpdateMyPos();
 
 				// Check for stuck
-				if (sd.checkStuck()) {
+				if (sd.checkStuck())
+				{
 					PPather.WriteLine("!Error:Major stuck on approach. Giving up");
 					mover.Stop();
 					return false;
 				}
-				if (WasInCombat != GContext.Main.Me.IsInCombat) {
+				if (WasInCombat != GContext.Main.Me.IsInCombat)
+				{
 					//PPather.WriteLine("Combat status changed");
 					mover.Stop();
 					return false;
@@ -948,15 +1159,20 @@ Venomtail Scorpid died.
 
 				double distance = monster.DistanceToSelf;
 				bool moved;
-				if (distance < 8) {
+				if (distance < 8)
+				{
 					loc = monster.Location;
 					moved = mover.moveTowardsFacing(Me, loc, Context.MeleeDistance, loc);
-				} else {
-					if (em == null) {
+				}
+				else
+				{
+					if (em == null)
+					{
 						loc = monster.Location;
 						em = new EasyMover(this, new Location(loc), false, AbortIfUnsafe);
 					}
-					if (NewTargetUpdate.IsReady) {
+					if (NewTargetUpdate.IsReady)
+					{
 						loc = monster.Location;
 						em.SetNewTarget(new Location(loc));
 						NewTargetUpdate.Reset();
@@ -964,12 +1180,14 @@ Venomtail Scorpid died.
 					EasyMover.MoveResult mr = em.move();
 
 					moved = true;
-					if (mr != EasyMover.MoveResult.Moving) {
+					if (mr != EasyMover.MoveResult.Moving)
+					{
 						moved = false;
 					}
 				}
 
-				if (!moved) {
+				if (!moved)
+				{
 					mover.Stop();
 					return true;
 				}
@@ -980,9 +1198,11 @@ Venomtail Scorpid died.
 			return false;
 		}
 
-		public bool WalkTo(GLocation loc, bool AbortIfUnsafe, int timeout, bool AllowDead) {
+		public bool WalkTo(GLocation loc, bool AbortIfUnsafe, int timeout, bool AllowDead)
+		{
 			if (loc.DistanceToSelf < Context.MeleeDistance &&
-				Math.Abs(loc.Bearing) < PI / 8) {
+				Math.Abs(loc.Bearing) < PI / 8)
+			{
 				mover.Stop();
 				return true;
 			}
@@ -992,11 +1212,13 @@ Venomtail Scorpid died.
 			GSpellTimer t = new GSpellTimer(0);
 			bool doJump = random.Next(4) == 0;
 			EasyMover em = null;
-			do {
+			do
+			{
 				UpdateMyPos();
 
 				// Check for stuck
-				if (sd.checkStuck()) {
+				if (sd.checkStuck())
+				{
 					PPather.WriteLine("!Error:Major stuck on approach. Giving up");
 					mover.Stop();
 					return false;
@@ -1005,20 +1227,25 @@ Venomtail Scorpid died.
 
 				double distance = loc.DistanceToSelf;
 				bool moved;
-				if (distance < 8) {
+				if (distance < 8)
+				{
 					moved = mover.moveTowardsFacing(Me, loc, Context.MeleeDistance, loc);
-				} else {
+				}
+				else
+				{
 					if (em == null)
 						em = new EasyMover(this, new Location(loc), false, AbortIfUnsafe);
 					EasyMover.MoveResult mr = em.move();
 
 					moved = true;
-					if (mr != EasyMover.MoveResult.Moving) {
+					if (mr != EasyMover.MoveResult.Moving)
+					{
 						moved = false;
 					}
 				}
 
-				if (!moved) {
+				if (!moved)
+				{
 					mover.Stop();
 					//PPather.WriteLine("did not move");
 					return true;
@@ -1030,7 +1257,8 @@ Venomtail Scorpid died.
 			return false;
 		}
 
-		public GLocation InFrontOf(GUnit unit, double d) {
+		public GLocation InFrontOf(GUnit unit, double d)
+		{
 			double x = unit.Location.X;
 			double y = unit.Location.Y;
 			double z = unit.Location.Z;
@@ -1041,7 +1269,8 @@ Venomtail Scorpid died.
 			return new GLocation((float)x, (float)y, (float)z);
 		}
 
-		public GLocation InFrontOf(GLocation loc, double heading, double d) {
+		public GLocation InFrontOf(GLocation loc, double heading, double d)
+		{
 			double x = loc.X;
 			double y = loc.Y;
 			double z = loc.Z;
@@ -1066,27 +1295,34 @@ Venomtail Scorpid died.
 		}
 		 */
 
-		private void GhostRun() {
+		private void GhostRun()
+		{
 			PPather.WriteLine("!Info:I died. Let's resurrect");
 			GLocation CorpseLocation = null;
 			#region 1. Release
-			while (Me.IsDead && !Me.IsGhost) {
+			while (Me.IsDead && !Me.IsGhost)
+			{
 				if (CorpseLocation == null)
 					CorpseLocation = Me.Location;
-				for (int n = 1; n <= 4; n++) {
-					if (Popup.IsVisible(n)) {
+				for (int n = 1; n <= 4; n++)
+				{
+					if (Popup.IsVisible(n))
+					{
 						String text = Popup.GetText(n);
-						if (text.Contains("until release") || text.Contains("You have died") || text.Contains("Releasing")) {
+						if (text.Contains("until release") || text.Contains("You have died") || text.Contains("Releasing"))
+						{
 							PPather.WriteLine("Found the release dialog, #" + n);
 							Popup.ClickButton(n, 1);
-						} else
+						}
+						else
 							PPather.WriteLine("!Error:Couldn't find release dialog");
 					}
 				}
 				Thread.Sleep(1000);
 			}
 			Thread.Sleep(3000);
-			if (BGMode) {
+			if (BGMode)
+			{
 				GSpellTimer s = new GSpellTimer(1000 * 60); // 1 minute
 				PPather.WriteLine("BGMode. Waiting for res");
 
@@ -1096,23 +1332,29 @@ Venomtail Scorpid died.
 				// since glider's default movement doesn't have stop
 				Movement.MoveToLocation(Me.Location);
 
-				while (Me.IsDead) {
+				while (Me.IsDead)
+				{
 					Thread.Sleep(500);
 				}
 				//PPather.WriteLine("Alive!");
-			} else {
+			}
+			else
+			{
 				Thread.Sleep(5000);
 				GLocation gloc = Me.CorpseLocation;
-				if (CorpseLocation != null) gloc = CorpseLocation;
+				if (CorpseLocation != null)
+					gloc = CorpseLocation;
 
 				Location target = null;
 				GLocation gtarget;
 				//PPather.WriteLine("Corpse is at " + gloc);
 
-				if (gloc.Z == 0) {
+				if (gloc.Z == 0)
+				{
 					PPather.WriteLine("!Warning:Corpse Z is 0");
 					target = new Location(gloc);
-					for (int q = 0; q < 50; q += 5) {
+					for (int q = 0; q < 50; q += 5)
+					{
 						float stand_z = 0;
 						int flags = 0;
 						float x = gloc.X + random.Next(20) - 10;
@@ -1121,12 +1363,15 @@ Venomtail Scorpid died.
 																	  -5000,
 																	  5000,
 																	  out stand_z, out flags, 0, 0);
-						if (ok) {
+						if (ok)
+						{
 							target = new Location(x, y, stand_z);
 							break;
 						}
 					}
-				} else {
+				}
+				else
+				{
 					target = new Location(gloc);
 
 				}
@@ -1138,9 +1383,11 @@ Venomtail Scorpid died.
 			#endregion
 
 				#region 2. Run to corpse
-				while (Me.IsDead && Me.GetDistanceTo(gloc) > 20) {
+				while (Me.IsDead && Me.GetDistanceTo(gloc) > 20)
+				{
 					EasyMover.MoveResult mr = em.move();
-					if (mr != EasyMover.MoveResult.Moving) return; // buhu
+					if (mr != EasyMover.MoveResult.Moving)
+						return; // buhu
 					UpdateMyPos();
 					Thread.Sleep(50);
 
@@ -1150,39 +1397,48 @@ Venomtail Scorpid died.
 
 				#region 3. Find safe place to res
 				float SafeDistance = 25.0f;
-				while (true) {
+				while (true)
+				{
 					// some brute force :p
 					GMonster[] monsters = GObjectList.GetMonsters();
 					PPather.WriteLine("Looking for a safe spot to resurrect");
 					float best_score = 1E30f;
 					float best_distance = 1E30f;
 					Location best_loc = null;
-					for (float x = -35; x <= 35; x += 5) {
-						for (float y = -35; y <= 35; y += 5) {
+					for (float x = -35; x <= 35; x += 5)
+					{
+						for (float y = -35; y <= 35; y += 5)
+						{
 							float rx = target.X + x;
 							float ry = target.Y + y;
 							GLocation xxx = new GLocation(rx, ry, 0);
-							if (xxx.GetDistanceTo(gtarget) < 35) {
+							if (xxx.GetDistanceTo(gtarget) < 35)
+							{
 								float stand_z = 0;
 								int flags = 0;
 								bool ok = world.triangleWorld.FindStandableAt(rx, ry,
 																			  target.Z - 20,
 																			  target.Z + 20,
 																			  out stand_z, out flags, 0, 0);
-								if (ok) {
+								if (ok)
+								{
 									float score = 0.0f;
 									GLocation l = new GLocation(rx, ry, stand_z);
-									foreach (GMonster monster in monsters) {
-										if (monster != null && monster.Reaction == GReaction.Hostile && !monster.IsDead && !PPather.IsStupidItem(monster)) {
+									foreach (GMonster monster in monsters)
+									{
+										if (monster != null && monster.Reaction == GReaction.Hostile && !monster.IsDead && !PPather.IsStupidItem(monster))
+										{
 											float d = l.GetDistanceTo(monster.Location);
-											if (d < 35) {
+											if (d < 35)
+											{
 												// one point per yard 
 												score += 35 - d;
 											}
 										}
 									}
 									float this_d = Me.GetDistanceTo(l);
-									if (score <= best_score && this_d < best_distance) {
+									if (score <= best_score && this_d < best_distance)
+									{
 										best_score = score;
 										best_distance = this_d;
 										best_loc = new Location(l);
@@ -1191,7 +1447,8 @@ Venomtail Scorpid died.
 							}
 						}
 					}
-					if (best_loc != null) {
+					if (best_loc != null)
+					{
 						GLocation best_gloc = new GLocation(best_loc.X, best_loc.Y, best_loc.Z);
 						PPather.WriteLine("Looks safe at " + best_gloc + " score " + best_score + " i am at " + Me.Location);
 						// walk over there
@@ -1200,21 +1457,27 @@ Venomtail Scorpid died.
 						// Check if I am safe
 						bool safe = true;
 						GMonster unsafe_monster = null;
-						foreach (GMonster monster in monsters) {
-							if (monster.Reaction == GReaction.Hostile && !monster.IsDead && !PPather.IsStupidItem(monster)) {
+						foreach (GMonster monster in monsters)
+						{
+							if (monster.Reaction == GReaction.Hostile && !monster.IsDead && !PPather.IsStupidItem(monster))
+							{
 								float d = Me.GetDistanceTo(monster);
 								if (d < SafeDistance)
-									if (Math.Abs(monster.Location.Z - Me.Location.Z) < 15) {
+									if (Math.Abs(monster.Location.Z - Me.Location.Z) < 15)
+									{
 										safe = false;
 										unsafe_monster = monster;
 									}
 
 							}
 						}
-						if (safe) {
+						if (safe)
+						{
 							PPather.WriteLine("Spot is safe. Resurrecting");
 							break; // yeah
-						} else {
+						}
+						else
+						{
 							if (unsafe_monster != null)
 								PPather.WriteLine("Spot is unsafe. Mob: " + unsafe_monster.Name);
 							else
@@ -1232,14 +1495,19 @@ Venomtail Scorpid died.
 				#region 4. Resurrect
 
 				// dialog should be up now
-				while (Me.IsDead) {
-					for (int n = 1; n <= 4; n++) {
-						if (Popup.IsVisible(n)) {
+				while (Me.IsDead)
+				{
+					for (int n = 1; n <= 4; n++)
+					{
+						if (Popup.IsVisible(n))
+						{
 							String text = Popup.GetText(n);
-							if (text == "Resurrect now?") {
+							if (text == "Resurrect now?")
+							{
 								PPather.WriteLine("Found the accept dialog, #" + n);
 								Popup.ClickButton(n, 1);
-							} else
+							}
+							else
 								PPather.WriteLine("!Error:Accept dialog wasn't found");
 						}
 					}
@@ -1249,39 +1517,48 @@ Venomtail Scorpid died.
 			}
 		}
 
-		public Task CreateTaskFromNode(NodeTask node, Task parent) {
+		public Task CreateTaskFromNode(NodeTask node, Task parent)
+		{
 			Task n = ParserTask.GetTask(this, node);
 			if (n != null)
 				n.parent = parent;
-			else {
+			else
+			{
 				PPather.WriteLine("!Warning:Unknown task type: " + node.type);
 				Context.KillAction("PPather, script corrupt", false);
 			}
 			return n;
 		}
 
-		private void MyPather() 
+		private void MyPather()
 		{
 			System.IO.TextReader reader = null;
 			NodeTask astRoot = null;
 
-			if (System.IO.File.Exists(PatherSettings.TaskFile)) {
+			if (System.IO.File.Exists(PatherSettings.TaskFile))
+			{
 				reader = System.IO.File.OpenText(PatherSettings.TaskFile);
-			} else if (System.IO.File.Exists(PatherSettings.TaskFile + ".txt")) {
+			}
+			else if (System.IO.File.Exists(PatherSettings.TaskFile + ".txt"))
+			{
 				// Let's check if they saved it as a .txt by accident
 				PPather.WriteLine("!Warning:Your task file has a .txt extension.");
 				PPather.WriteLine("!Warning:PPather will continue but you should save as .psc");
 				reader = System.IO.File.OpenText(PatherSettings.TaskFile + ".txt");
-			} else {
+			}
+			else
+			{
 				MessageBox.Show("Your selected task file wasn't found:\n" + PatherSettings.TaskFile);
 			}
 
-			if (reader != null) {
+			if (reader != null)
+			{
 				Preprocessor pproc = new Preprocessor(reader);
 				TaskParser t = new TaskParser(new StreamReader(pproc.ProcessedStream));
 				astRoot = t.ParseTask(null);
 				reader.Close();
-			} else
+			}
+			else
 				GContext.Main.KillAction("!Error:TextReader was null. File not found?", false);
 
 
@@ -1291,6 +1568,10 @@ Venomtail Scorpid died.
 
 
 			Helpers.DetectFollower CheckFollow = new Helpers.DetectFollower();
+
+			Stack<Task> taskQueue = new Stack<Task>();
+			Stack<Activity> activityQueue = new Stack<Activity>();
+
 			Task rootTask = CreateTaskFromNode(root, null);
 			Helpers.TaskInfo.Root = rootTask;
 			form.CreateTreeFromTasks(rootTask);
@@ -1300,45 +1581,61 @@ Venomtail Scorpid died.
 			GSpellTimer nothingToDoTimer = new GSpellTimer(3 * 1000);
 			bool exit = false;
 			GSpellTimer Tick = new GSpellTimer(100);
-			do {
-				if (RunState != WantedState) {
-					if (RunState == RunState_e.Running) {
+			do
+			{
+				if (RunState != WantedState)
+				{
+					if (RunState == RunState_e.Running)
+					{
 						if (activity != null)
 							activity.Stop();
 					}
 					RunState = WantedState;
 				}
 
-				if (updateStatusTimer.IsReady) {
+				if (updateStatusTimer.IsReady)
+				{
 					UpdateXP();
 					form.SetStatus(Kills, KPh, Loots, XPh, Harvests, TTL, Deaths);
 					updateStatusTimer.Reset();
 				}
-				if (RunState == RunState_e.Stopped) {
+				if (RunState == RunState_e.Stopped)
+				{
 					PPather.WriteLine("!Info:Stop requested. Stopping glide");
 					Context.KillAction("PPather wants to stop", false);
 					Thread.Sleep(500); // pause
-				} else if (RunState == RunState_e.Paused) {
+				}
+				else if (RunState == RunState_e.Paused)
+				{
 					UpdateMyPos();
 					Thread.Sleep(100); // pause
-				} else if (RunState == RunState_e.Running) {
+				}
+				else if (RunState == RunState_e.Running)
+				{
 					UpdateMyPos();
-					if (Me.IsDead) {
+					if (Me.IsDead)
+					{
 						Deaths++;
 						if (PatherSettings.MaxResurrection != true ||
 							(PatherSettings.MaxResurrection == true) &&
-							(Deaths < PatherSettings.MaxResurrectionAmount)) {
+							(Deaths < PatherSettings.MaxResurrectionAmount))
+						{
 							Thread.Sleep(1000);
 							activity = null;
 							GhostRun();
 							Thread.Sleep(1500);
-							if (Me.IsDead) {
+							if (Me.IsDead)
+							{
 								//!!!
-							} else {
+							}
+							else
+							{
 								Rest();
 							}
-						} else if ((PatherSettings.MaxResurrection == true) &&
-								(Deaths >= PatherSettings.MaxResurrectionAmount)) {
+						}
+						else if ((PatherSettings.MaxResurrection == true) &&
+								(Deaths >= PatherSettings.MaxResurrectionAmount))
+						{
 							Thread.Sleep(300);
 							Context.HearthAndExit();
 							PPather.WriteLine("!Info:Died too many times. Stopping Glide");
@@ -1346,13 +1643,15 @@ Venomtail Scorpid died.
 						}
 					}
 
-					if (CheckFollow.CheckFollowers()) {
+					if (CheckFollow.CheckFollowers())
+					{
 						Context.HearthAndExit();
 						PPather.WriteLine("!Info:Followed for too long. Stopping Glide");
 						Context.KillAction("Followed for too long, stopping glide", false);
 					}
 
-					if (Helpers.TimedLogout.CheckLogoutTime(LogoutTimer)) {
+					if (Helpers.TimedLogout.CheckLogoutTime(LogoutTimer))
+					{
 						Context.HearthAndExit();
 						PPather.WriteLine("!Info:Logout timer reached. Stopping Glide");
 						Context.KillAction("Logout timer reached. Stopping glide", false);
@@ -1361,35 +1660,134 @@ Venomtail Scorpid died.
 					if (Helpers.StopAtLevel.TimeToStop())
 						WantedState = RunState_e.Stopped;
 
-					if (activity == null || taskTimer.IsReady) {
+					if (activity == null || taskTimer.IsReady)
+					{
 						// Reevaluate what to do
 						Location l = new Location(Me.Location);
 						taskTimer.Reset();
 
 						Activity newActivity = null;
-						if (rootTask.WantToDoSomething()) {
+                        if (rootTask.WantToDoSomething())
+						{
 							newActivity = rootTask.GetActivity();
 							nothingToDoTimer.Reset();
 						}
 
-						if (newActivity != activity) {
-							if (activity != null) {
+						if (newActivity.task.GetType().ToString() == "Pather.Tasks.LoadTask")
+						{
+							PPather.WriteLine("Queueing the old task tree");
+							taskQueue.Push(rootTask);
+							activityQueue.Push(activity);
+							//PPather.WriteLine("Still alive!");
+							if (activity != null)
+							{
+								bool done = false;
+								int wait = 0;
+
+								do
+								{
+									done = activity.Do();
+									wait++;
+									Thread.Sleep(10);
+								} while (!done && (wait > 100));
+
+								if (!done)
+									activity.Stop();
+
+								Task tr = activity.task;
+								while (tr != null)
+								{
+									tr.isActive = false;
+									tr = tr.parent;
+								}
+								activity = null;
+							}
+							reader = null;
+							astRoot = null;
+
+							string loadfile = Functions.GetTaskFilePath() + ((LoadTask)newActivity.task).File;
+							PPather.WriteLine("Loading file - " + loadfile);
+							if (File.Exists(loadfile))
+								reader = File.OpenText(loadfile);
+							else
+								PPather.WriteLine("!Warning:File could not be loaded - " + loadfile);
+							if (reader != null)
+							{
+								Preprocessor pproc = new Preprocessor(reader);
+								TaskParser t = new TaskParser(new StreamReader(pproc.ProcessedStream));
+								astRoot = t.ParseTask(null);
+								reader.Close();
+								root = null;
+								root = new RootNode();
+								root.AddTask(astRoot);
+								root.BindSymbols(); // Just to make it a tad faster
+
+								rootTask = null;
+								rootTask = CreateTaskFromNode(root, null);
+								Helpers.TaskInfo.Root = rootTask; // Desired?
+								form.CreateTreeFromTasks(rootTask);
+								activity = null;
+								newActivity.task.Restart();
+								newActivity = null;
+
+								if (rootTask == null)
+									PPather.WriteLine("!Error:Load: No root task!");
+								else
+								{
+									PPather.WriteLine("Load: Load has been successful");
+									rootTask.Restart();
+                                    if (rootTask.WantToDoSomething())
+									{
+										newActivity = rootTask.GetActivity();
+										nothingToDoTimer.Reset();
+									}
+								}
+							}
+						}
+
+						if (newActivity.task.GetType().ToString() == "Pather.Tasks.UnloadTask")
+						{
+							if (activity != null)
+							{
+								activity.Stop();
+								activity = null;
+							}
+							rootTask = taskQueue.Pop();
+							activity = activityQueue.Pop();
+							newActivity.task.Restart();
+							newActivity = null;
+                            if (rootTask.WantToDoSomething())
+							{
+								newActivity = rootTask.GetActivity();
+								nothingToDoTimer.Reset();
+							}
+						}
+
+						if (newActivity != activity)
+						{
+							if (activity != null)
+							{
 								// change activity before it was finished
 								activity.Stop();
 								Task tr = activity.task;
-								while (tr != null) {
+								while (tr != null)
+								{
 									tr.isActive = false;
 									tr = tr.parent;
 								}
 							}
 							activity = newActivity;
-							if (activity != null) {
+							if (activity != null)
+							{
 								Task tr = activity.task;
-								while (tr != null) {
+								while (tr != null)
+								{
 									tr.isActive = true;
 									tr = tr.parent;
 								}
-							} else {
+							}
+							else
+							{
 								PPather.WriteLine("!Error:Got a null activity");
 							}
 
@@ -1397,37 +1795,46 @@ Venomtail Scorpid died.
 							form.SetZone(MacrolessZoneInfo.GetZoneText(), MacrolessZoneInfo.GetSubZoneText());
 							form.SetLocation(GetCurrentLocation());
 
-							if (activity != null) {
+							if (activity != null)
+							{
 								PPather.WriteLine("Got a new activity: " + activity);
-								if (SaveTimer.IsReady) {
+								if (SaveTimer.IsReady)
+								{
 									SaveAllState();
 									SaveTimer.Reset();
 								}
 								activity.Start();
 							}
 						}
-						if (newActivity == null) activity = null;
+						if (newActivity == null)
+							activity = null;
 
 					}
 
-					if (activity == null) {
-						if (nothingToDoTimer.IsReady) {
+					if (activity == null)
+					{
+						if (nothingToDoTimer.IsReady)
+						{
 							PPather.WriteLine("!Info:Script ended. Stopping Glide");
 							Context.KillAction("PPather, nothing more to do", false);
 							return;
 						}
-					} else
+					}
+					else
 						nothingToDoTimer.Reset();
 					//form.SetTask(task); 
 
-					if (activity != null) {
+					if (activity != null)
+					{
 						bool done = activity.Do();
 						nothingToDoTimer.Reset(); // did something
-						if (done) {
+						if (done)
+						{
 							//PPather.WriteLine("Finished activity " + activity);
 							activity.task.ActivityDone(activity);
 							Task tr = activity.task;
-							while (tr != null) {
+							while (tr != null)
+							{
 								tr.isActive = false;
 								tr = tr.parent;
 							}
@@ -1444,9 +1851,9 @@ Venomtail Scorpid died.
 			} while (!exit);
 		}
 
-		public static void WriteLine ( string msg )
+		public static void WriteLine(string msg)
 		{
-			PPather.form.WriteLine ( msg );
+			PPather.form.WriteLine(msg);
 		}
 
 		public static void Write(string msg)

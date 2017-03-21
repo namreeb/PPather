@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -39,7 +39,8 @@ namespace Pather.Tasks
 			: base(pather, node)
 		{
 			Distance = node.GetValueOfId("Distance").GetFloatValue();
-			if (Distance == 0.0f) Distance = 10f;
+			if (Distance == 0.0f)
+				Distance = 10f;
 			UseMount = node.GetBoolValueOfId("UseMount");
 		}
 
@@ -71,13 +72,13 @@ namespace Pather.Tasks
 				for (int i = 0; i < players.Length; i++)
 				{
 					GPlayer player = players[i];
-					if (!player.IsSameFaction || ppather.IsBlacklisted(player) || 
+					if (!player.IsSameFaction || ppather.IsBlacklisted(player) ||
 						player == GContext.Main.Me || player.Health < 0.05)
 					{
 						playerScore[i] = -100f;
 					}
 					else
-					{ 
+					{
 						for (int j = 0; j < players.Length; j++)
 						{
 							if (players[j].IsSameFaction && players[j] != GContext.Main.Me &&
@@ -103,7 +104,8 @@ namespace Pather.Tasks
 					if (target != null)
 						PPather.WriteLine("follow player " + target.Name + " score " + best_score);
 				}
-				else target = null; 
+				else
+					target = null;
 				UpdateTimer.Reset();
 			}
 
@@ -117,7 +119,7 @@ namespace Pather.Tasks
 				return new Location(target.Location);
 			return null;
 		}
-	
+
 		public override bool IsFinished()
 		{
 			return false;
@@ -145,11 +147,11 @@ namespace Pather.Tasks
 			return target != null;
 		}
 
-		private Activity         waitTask = null;
+		private Activity waitTask = null;
 		private ActivityApproach walkTask = null;
 
 		public override Activity GetActivity()
-		{                      
+		{
 			if (walkTask != null)
 			{
 				// check result of walking

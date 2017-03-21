@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -92,12 +92,17 @@ namespace Pather.Activities
 				System.Media.SoundPlayer sp = new System.Media.SoundPlayer("PlayerNear.wav");
 				WaitAfterLeave.Reset();
 				SpamTimer.Reset();
-				try {
-					if (PlaySound) {
+				try
+				{
+					if (PlaySound)
+					{
 						sp.Load();
 						sp.Play();
 					}
-				} catch { }
+				}
+				catch
+				{
+				}
 
 				do
 				{
@@ -114,9 +119,16 @@ namespace Pather.Activities
 					}
 
 					hide = false;
-					if (WaitUntilClear == true && GetClosestPlayer() != null) { hide = true; }
-					else if (WaitUntilClear != true && GetClosestPlayer().DistanceToSelf < AvoidRange) { hide = true; }
-					if (hide) WaitAfterLeave.Reset();
+					if (WaitUntilClear == true && GetClosestPlayer() != null)
+					{
+						hide = true;
+					}
+					else if (WaitUntilClear != true && GetClosestPlayer().DistanceToSelf < AvoidRange)
+					{
+						hide = true;
+					}
+					if (hide)
+						WaitAfterLeave.Reset();
 
 					if (Me.PlayerClass.ToString() == "Rogue" && StealthWhileHiding == true && !GPlayerSelf.Me.IsStealth)
 					{
@@ -125,7 +137,8 @@ namespace Pather.Activities
 
 					if (Me.PlayerClass.ToString() == "Druid" && StealthWhileHiding == true && !GPlayerSelf.Me.IsStealth)
 					{
-						if (!Me.HasWellKnownBuff("CatForm")) GContext.Main.CastSpell(CatFormKey, true, false); // if we aren't in cat form, then switch before trying to stealth
+						if (!Me.HasWellKnownBuff("CatForm"))
+							GContext.Main.CastSpell(CatFormKey, true, false); // if we aren't in cat form, then switch before trying to stealth
 						GContext.Main.CastSpell(StealthKey, true, false);
 					}
 
@@ -133,7 +146,9 @@ namespace Pather.Activities
 					{
 						SpamTimer.Reset();
 						minutes++;
-						PPather.WriteLine("AvoidPlayers: Waited " + minutes.ToString() + "minutes for players to leave."); if (PlaySound) sp.Play();
+						PPather.WriteLine("AvoidPlayers: Waited " + minutes.ToString() + "minutes for players to leave.");
+						if (PlaySound)
+							sp.Play();
 						if (minutes >= TimeUntilExit)
 						{
 							PPather.WriteLine("AvoidPlayers: Time to log out");

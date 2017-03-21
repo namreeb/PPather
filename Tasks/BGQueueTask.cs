@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -27,7 +27,8 @@ using Pather.Graph;
 using Pather.Parser;
 using Pather.Helpers.UI;
 
-namespace Pather.Tasks {
+namespace Pather.Tasks
+{
 	public class BGQueueTaskStatus
 	{
 		public string Name = null;
@@ -46,7 +47,8 @@ namespace Pather.Tasks {
 
 			for (int i = 0; i < statusCount; i++)
 			{
-				if (GetQueueState(Status[i].Name) == MiniMapBattlefieldFrameState.Inside) return true;
+				if (GetQueueState(Status[i].Name) == MiniMapBattlefieldFrameState.Inside)
+					return true;
 			}
 
 			return false;
@@ -62,7 +64,8 @@ namespace Pather.Tasks {
 				MiniMapBattlefieldFrameState bfState = GetQueueState(Status[i].Name);
 				if (bfState == MiniMapBattlefieldFrameState.Queue ||
 					bfState == MiniMapBattlefieldFrameState.CanEnter ||
-					bfState == MiniMapBattlefieldFrameState.Inside) return true;
+					bfState == MiniMapBattlefieldFrameState.Inside)
+					return true;
 			}
 
 			return false;
@@ -156,9 +159,10 @@ namespace Pather.Tasks {
 		string Battlefield;
 
 		public BGQueueTask(PPather pather, NodeTask node)
-			: base(pather, node) {
+			: base(pather, node)
+		{
 			Battlefield = node.GetValueOfId("Battlefield").GetStringValue();
-			
+
 			if (Battlefield == null || Battlefield.Length == 0)
 				PPather.WriteLine("*** BGQueue: Battlefield is missing");
 
@@ -166,22 +170,26 @@ namespace Pather.Tasks {
 				PPather.WriteLine("*** BGQueue: NPC '" + NPC + "' is unknown");
 		}
 
-		private int GetCooldown() {
-			return 60 * 1; // 3 minutes
+		private int GetCooldown()
+		{
+			return 60 * 3; // 3 minutes
 		}
 
-		public override void GetParams(List<string> l) {
+		public override void GetParams(List<string> l)
+		{
 			l.Add("Battlefield");
 			base.GetParams(l);
 		}
 
-		public override bool IsFinished() {
+		public override bool IsFinished()
+		{
 			return false;
 		}
 
 		private bool wantQueue = false;
 
-		private void UpdateWants() {
+		private void UpdateWants()
+		{
 			// Check queue
 			wantQueue = false;
 
@@ -207,10 +215,14 @@ namespace Pather.Tasks {
 			//PPather.WriteLine("Want to Queue (" + Battlefield + "): " + (wantQueue ? "yes" : "no"));
 		}
 
-		public override Location GetLocation() {
+		public override Location GetLocation()
+		{
 			Location loc = null;
 			UpdateWants();
-			if (wantQueue) { loc = GetLocationOfNPC(); }
+			if (wantQueue)
+			{
+				loc = GetLocationOfNPC();
+			}
 			//PPather.WriteLine("NPC location is: " + loc);
 			return loc;
 		}
@@ -220,21 +232,28 @@ namespace Pather.Tasks {
 			return "Queueing for BG";
 		}
 
-		public override bool WantToDoSomething() {
+		public override bool WantToDoSomething()
+		{
 			UpdateWants();
-			if (wantQueue) return true;
+			if (wantQueue)
+				return true;
 			return false;
 		}
 
 		ActivityQueue queueActivity;
 
-		public override Activity GetActivity() {
+		public override Activity GetActivity()
+		{
 
 			// PPather.WriteLine("Pickup::GetActivity()");
-			if (!IsCloseToNPC()) {
+			if (!IsCloseToNPC())
+			{
 				return GetWalkToActivity();
-			} else {
-				if (queueActivity == null) {
+			}
+			else
+			{
+				if (queueActivity == null)
+				{
 					queueActivity = new ActivityQueue(this, FindNPC(), Battlefield);
 				}
 				return queueActivity;
@@ -242,8 +261,10 @@ namespace Pather.Tasks {
 
 		}
 
-		public override bool ActivityDone(Activity task) {
-			if (task == queueActivity) {
+		public override bool ActivityDone(Activity task)
+		{
+			if (task == queueActivity)
+			{
 				//ppather.Blacklist(NPC, 15 * 60);
 				return true;
 			}

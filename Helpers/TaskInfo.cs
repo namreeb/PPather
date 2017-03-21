@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 using System;
@@ -22,22 +22,31 @@ using Glider.Common.Objects;
 using Pather.Tasks;
 using System.Collections;
 
-namespace Pather.Helpers 
+namespace Pather.Helpers
 {
-	class TaskInfo 
+	class TaskInfo
 	{
 		private static Task root;
 		private static List<Task> tasklist;
 
 		public static Task Root
 		{
-			get { return root; }
-			set { root = value; }
+			get
+			{
+				return root;
+			}
+			set
+			{
+				root = value;
+			}
 		}
 
 		public static List<Task> TaskList
 		{
-			get { return tasklist; }
+			get
+			{
+				return tasklist;
+			}
 		}
 
 		private void FindChildren(Task parent)

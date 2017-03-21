@@ -6,8 +6,10 @@ using System.Text;
 using Glider.Common.Objects;
 using Pather;
 
-namespace Pather.Helpers.UI {
-	public class QuestFrame {
+namespace Pather.Helpers.UI
+{
+	public class QuestFrame
+	{
 		/*
 
 Pickup quest (many optioss): 
@@ -82,110 +84,137 @@ V QuestWatchFrame
 
 		 */
 
-		public static GInterfaceObject GetFrame() {
+		public static GInterfaceObject GetFrame()
+		{
 			return GContext.Main.Interface.GetByName("QuestFrame");
 		}
 
-		public static string GetCompleteTitle() {
+		public static string GetCompleteTitle()
+		{
 			GInterfaceObject QuestDetailScrollChildFrame = GContext.Main.Interface.GetByName("QuestRewardScrollChildFrame");
 			GInterfaceObject QuestTitle = QuestDetailScrollChildFrame.GetChildObject("QuestRewardTitleText");
 			PPather.WriteLine("Reward title: " + QuestTitle.LabelText + " v: " + QuestTitle.IsVisible);
 			return QuestTitle.LabelText;
 		}
 
-		public static string GetAcceptTitle() {
+		public static string GetAcceptTitle()
+		{
 			GInterfaceObject QuestDetailScrollChildFrame = GContext.Main.Interface.GetByName("QuestDetailScrollChildFrame");
 			GInterfaceObject QuestTitle = QuestDetailScrollChildFrame.GetChildObject("QuestTitleText");
 			PPather.WriteLine("Quest title: " + QuestTitle.LabelText + " v: " + QuestTitle.IsVisible);
 			return QuestTitle.LabelText;
 		}
 
-		public static bool IsVisible() {
+		public static bool IsVisible()
+		{
 			GInterfaceObject obj = GetFrame();
-			if (obj != null && obj.IsVisible) return true;
+			if (obj != null && obj.IsVisible)
+				return true;
 			return false;
 		}
 
-		public static bool IsSelect() {
+		public static bool IsSelect()
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestTitleButton1");
-			if (btn != null && btn.IsVisible) return true;
+			if (btn != null && btn.IsVisible)
+				return true;
 			return false;
 		}
 
-		public static bool IsAccept() {
+		public static bool IsAccept()
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestFrameAcceptButton");
-			if (btn != null && btn.IsVisible) return true;
+			if (btn != null && btn.IsVisible)
+				return true;
 			return false;
 		}
 
-		public static bool IsContinue() {
+		public static bool IsContinue()
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestFrameCompleteButton");
-			if (btn != null && btn.IsVisible) return true;
+			if (btn != null && btn.IsVisible)
+				return true;
 			return false;
 		}
 
-		public static bool IsComplete() {
+		public static bool IsComplete()
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestFrameCompleteQuestButton");
-			if (btn != null && btn.IsVisible) return true;
+			if (btn != null && btn.IsVisible)
+				return true;
 			return false;
 		}
 
-		public static int[] AvailableRewards() {
+		public static int[] AvailableRewards()
+		{
 			List<int> options = new List<int>();
-			for (int i = 1; i <= 10; i++) {
+			for (int i = 1; i <= 10; i++)
+			{
 				GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestRewardItem" + i);
-				if (btn != null && btn.IsVisible) options.Add(i);
+				if (btn != null && btn.IsVisible)
+					options.Add(i);
 			}
 			return options.ToArray();
 		}
 
-		public static void SelectReward(int nr) {
+		public static void SelectReward(int nr)
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestRewardItem" + nr);
 			if (btn != null && btn.IsVisible)
-				Functions.Click(btn);
+				Functions.Click(btn, false);
 		}
 
-		public static void Accept() {
+		public static void Accept()
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestFrameAcceptButton");
 			if (btn != null && btn.IsVisible)
-				Functions.Click(btn);
+				Functions.Click(btn, false);
 		}
 
-		public static void Continue() {
+		public static void Continue()
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestFrameCompleteButton");
 			if (btn != null && btn.IsVisible)
-				Functions.Click(btn);
+				Functions.Click(btn, false);
 
 		}
 
-		public static void Complete() {
+		public static void Complete()
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestFrameCompleteQuestButton");
 			if (btn != null && btn.IsVisible)
-				Functions.Click(btn);
+				Functions.Click(btn, false);
 		}
 
-		public static void Close() {
+		public static void Close()
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestFrameCloseButton");
 			if (btn != null && btn.IsVisible)
-				Functions.Click(btn);
+				Functions.Click(btn, false);
 		}
 
-		public static void Cancel() {
+		public static void Cancel()
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestFrameCancelButton");
-			if (btn != null && btn.IsVisible) {
+			if (btn != null && btn.IsVisible)
+			{
 				PPather.WriteLine("  click QuestFrameCancelButton");
-				Functions.Click(btn);
-			} else
+				Functions.Click(btn, false);
+			}
+			else
 				PPather.WriteLine("  can't find cancel button");
 
 		}
 
-		public static void Goodbye() {
+		public static void Goodbye()
+		{
 			GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestFrameGoodbyeButton");
-			if (btn != null && btn.IsVisible) {
+			if (btn != null && btn.IsVisible)
+			{
 				PPather.WriteLine("  click QuestFrameGoodbyeButton");
-				Functions.Click(btn);
-			} else
+				Functions.Click(btn, false);
+			}
+			else
 				PPather.WriteLine("  can't find goodbye button");
 
 		}
@@ -196,7 +225,8 @@ V QuestWatchFrame
 			for (int i = 1; i <= 32; i++)
 			{
 				GInterfaceObject btn = GContext.Main.Interface.GetByName("QuestTitleButton" + i);
-				if (btn != null && btn.IsVisible) options.Add(btn);
+				if (btn != null && btn.IsVisible)
+					options.Add(btn);
 			}
 			return options.ToArray();
 		}
@@ -204,7 +234,8 @@ V QuestWatchFrame
 		public static bool ClickOptionText(string text)
 		{
 			GInterfaceObject[] options = VisibleOptions();
-			if (options.Length < 1) return false;
+			if (options.Length < 1)
+				return false;
 
 
 			PPather.WriteLine(options.Length + " visible options");
@@ -215,7 +246,7 @@ V QuestWatchFrame
 				{
 					if (child != null && child.IsVisible && child.LabelText.Contains(text))
 					{
-						Functions.Click(button);
+						Functions.Click(button, false);
 						return true;
 					}
 				}
@@ -226,7 +257,7 @@ V QuestWatchFrame
 		public static void ClickOption(GInterfaceObject btn)
 		{
 			if (btn != null && btn.IsVisible)
-				Functions.Click(btn);
+				Functions.Click(btn, false);
 		}
 	}
 }

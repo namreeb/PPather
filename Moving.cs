@@ -2,18 +2,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -209,30 +209,37 @@ namespace Pather
 		public void MoveRandom()
 		{
 			int d = PPather.random.Next(4);
-			if (d == 0) Forwards(true);
-			if (d == 1) StrafeRight(true);
-			if (d == 2) Backwards(true);
-			if (d == 3) StrafeLeft(true);
+			if (d == 0)
+				Forwards(true);
+			if (d == 1)
+				StrafeRight(true);
+			if (d == 2)
+				Backwards(true);
+			if (d == 3)
+				StrafeLeft(true);
 		}
 
 		public void StrafeLeft(bool go)
 		{
 			strafeLeft = go;
-			if (go) strafeRight = false;
+			if (go)
+				strafeRight = false;
 			PushKeys();
 		}
 
 		public void StrafeRight(bool go)
 		{
 			strafeRight = go;
-			if (go) strafeLeft = false;
+			if (go)
+				strafeLeft = false;
 			PushKeys();
 		}
 
 		public void RotateLeft(bool go)
 		{
 			rotateLeft = go;
-			if (go) rotateRight = false;
+			if (go)
+				rotateRight = false;
 			PushKeys();
 		}
 
@@ -240,7 +247,8 @@ namespace Pather
 		public void RotateRight(bool go)
 		{
 			rotateRight = go;
-			if (go) rotateLeft = false;
+			if (go)
+				rotateLeft = false;
 			PushKeys();
 		}
 
@@ -248,14 +256,16 @@ namespace Pather
 		public void Forwards(bool go)
 		{
 			runForwards = go;
-			if (go) runBackwards = false;
+			if (go)
+				runBackwards = false;
 			PushKeys();
 		}
 
 		public void Backwards(bool go)
 		{
 			runBackwards = go;
-			if (go) runForwards = false;
+			if (go)
+				runForwards = false;
 			PushKeys();
 		}
 
@@ -353,13 +363,26 @@ namespace Pather
 			if (d > distance)
 			{
 				int dir = GetLocationDirection(to);
-				if (dir != 0) moving |= true;
-				if (dir == 1 || dir == 3 || dir == 0) { StrafeLeft(false); StrafeRight(false); };
-				if (dir == 2 || dir == 4 || dir == 0) { Forwards(false); Backwards(false); };
-				if (dir == 1) Forwards(true);
-				if (dir == 2) StrafeRight(true);
-				if (dir == 3) Backwards(true);
-				if (dir == 4) StrafeLeft(true);
+				if (dir != 0)
+					moving |= true;
+				if (dir == 1 || dir == 3 || dir == 0)
+				{
+					StrafeLeft(false);
+					StrafeRight(false);
+				};
+				if (dir == 2 || dir == 4 || dir == 0)
+				{
+					Forwards(false);
+					Backwards(false);
+				};
+				if (dir == 1)
+					Forwards(true);
+				if (dir == 2)
+					StrafeRight(true);
+				if (dir == 3)
+					Backwards(true);
+				if (dir == 4)
+					StrafeLeft(true);
 				//PPather.WriteLine("Move dir: " + dir);
 			}
 			else
@@ -390,33 +413,46 @@ namespace Pather
 		public double GetMoveHeading(out double speed)
 		{
 			double head = GContext.Main.Me.Heading;
-			double r = 0; ;
+			double r = 0;
+			;
 			speed = 0.0;
 			if (runForwards)
 			{
-				speed = 7.0; r = head;
-				if (strafeRight) r += PI / 2;
-				if (strafeLeft) r -= PI / 2;
-				if (runBackwards) speed = 0.0;
+				speed = 7.0;
+				r = head;
+				if (strafeRight)
+					r += PI / 2;
+				if (strafeLeft)
+					r -= PI / 2;
+				if (runBackwards)
+					speed = 0.0;
 			}
 			else if (runBackwards)
 			{
-				speed = 4.5; r = head + PI;
-				if (strafeRight) r -= PI / 2;
-				if (strafeLeft) r += PI / 2;
-				if (runBackwards) speed = 0.0;
+				speed = 4.5;
+				r = head + PI;
+				if (strafeRight)
+					r -= PI / 2;
+				if (strafeLeft)
+					r += PI / 2;
+				if (runBackwards)
+					speed = 0.0;
 			}
 			else if (strafeLeft)
 			{
-				speed = 7.0; r = head + PI * 3.0 / 4.0;
-				if (strafeRight) speed = 0;
+				speed = 7.0;
+				r = head + PI * 3.0 / 4.0;
+				if (strafeRight)
+					speed = 0;
 			}
 			else if (strafeRight)
 			{
-				speed = 7.0; r = head + PI / 4;
+				speed = 7.0;
+				r = head + PI / 4;
 			}
 
-			if (head >= 2 * PI) head -= 2 * PI;
+			if (head >= 2 * PI)
+				head -= 2 * PI;
 			return head;
 		}
 	}
@@ -461,7 +497,8 @@ namespace Pather
 			else
 			{
 				// update predicted location
-				double h; double speed;
+				double h;
+				double speed;
 				h = mover.GetMoveHeading(out speed);
 
 				float dt = (float)-lastStuckCheck.TicksLeft / 1000f;
@@ -569,7 +606,15 @@ namespace Pather
 		GSpellTimer PathTimeout = new GSpellTimer(5000); // no path can be older than this
 		MoveAlonger MoveAlong;
 
-		public enum MoveResult { Reached, Stuck, CantFindPath, Unsafe, Moving, GotThere };
+		public enum MoveResult
+		{
+			Reached,
+			Stuck,
+			CantFindPath,
+			Unsafe,
+			Moving,
+			GotThere
+		};
 
 		public EasyMover(PPather pather, Location target, bool GiveUpIfStuck,
 						bool GiveUpIfUnsafe)
@@ -586,7 +631,7 @@ namespace Pather
 
 		public void SetPathTimeout(int ms)
 		{
-			PathTimeout = new GSpellTimer(ms); // no path can be older than this				
+			PathTimeout = new GSpellTimer(ms); // no path can be older than this                
 		}
 
 		public void SetNewTarget(Location target)
@@ -647,7 +692,8 @@ namespace Pather
 				else if (!MoveAlong.MoveAlong())
 				{
 					MoveAlong = null; // got stuck!
-					if (GiveUpIfStuck) return MoveResult.Stuck;
+					if (GiveUpIfStuck)
+						return MoveResult.Stuck;
 				}
 			}
 			return MoveResult.Moving;
@@ -749,7 +795,7 @@ namespace Pather
 				{
 					PPather.WriteLine("Can't move " + current);
 					world.BlacklistStep(prev, current);
-					//world.MarkStuckAt(loc, Me.Heading);						
+					//world.MarkStuckAt(loc, Me.Heading);                        
 					mover.MoveRandom();
 					Thread.Sleep(500);
 					mover.Stop();
@@ -758,7 +804,8 @@ namespace Pather
 				}
 
 				{
-					double h; double speed;
+					double h;
+					double speed;
 					h = mover.GetMoveHeading(out speed);
 					float stand_z = 0.0f;
 					int flags = 0;

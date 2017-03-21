@@ -6,9 +6,12 @@ using System.Text;
 using Glider.Common.Objects;
 using Pather;
 
-namespace Pather.Helpers.UI {
-	public class MacrolessZoneInfo {
-		public static String GetZoneText() {
+namespace Pather.Helpers.UI
+{
+	public class MacrolessZoneInfo
+	{
+		public static String GetZoneText()
+		{
 			return GContext.Main.ZoneText;
 			/*GInterfaceObject formZone = GContext.Main.Interface.GetByName("ZoneTextFrame");
 			if (formZone != null)
@@ -24,7 +27,8 @@ namespace Pather.Helpers.UI {
 			return null;*/
 		}
 
-		public static String GetSubZoneText() {
+		public static String GetSubZoneText()
+		{
 			//return GContext.Main.SubZoneText;
 			return "subzone";
 			/*GInterfaceObject formSubZone = GContext.Main.Interface.GetByName("SubZoneTextFrame");

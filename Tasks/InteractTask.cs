@@ -1,4 +1,4 @@
-/*
+﻿/*
   This file is part of PPather.
 
     PPather is free software: you can redistribute it and/or modify
@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Glider.Common.Objects;
 using Pather;
 using Pather.Activities;
 using Pather.Graph;
@@ -27,70 +28,62 @@ using Pather.Parser;
 
 namespace Pather.Tasks
 {
-	// A task that is never done
-	public class WhenTask : ParserTask
+	public class InteractTask : NPCInteractTask
 	{
-		Task childTask;
-		bool inside = false;
-		public WhenTask(PPather pather, NodeTask node)
+		private bool done = false;
+
+		public InteractTask(PPather pather, NodeTask node)
 			: base(pather, node)
 		{
-			childTask = pather.CreateTaskFromNode(node.subTasks[0], this);
-		}
-
-		public override void GetParams(List<string> l)
-		{
-			l.Add("cond");
-			base.GetParams(l);
 		}
 
 		public override bool IsFinished()
 		{
-			return childTask.IsFinished();
+			return done;
 		}
+
+		public override string ToString()
+		{
+			return "Interacting with NPC";
+		}
+
+        public override void Restart()
+        {
+            done = false;
+        }
 
 		public override Location GetLocation()
 		{
-			return childTask.GetLocation();
-		}
-
-		public override Task[] GetChildren()
-		{
-			return new Task[] { childTask };
-		}
-
-		public override void Restart()
-		{
-            inside = false;
-			childTask.Restart(); // restart my baby
+			return null;
 		}
 
 		public override bool WantToDoSomething()
 		{
-			if (!inside && nodetask.GetBoolValueOfId("cond"))
-				inside = true;
-			if (inside && (!childTask.WantToDoSomething()))
-				inside = false;
-			if (inside)
-				return true;
-			return false;
+			return (KnowNPCLocation() && !done);
 		}
 
+		ActivityInteract activity;
 		public override Activity GetActivity()
 		{
-			return childTask.GetActivity();
+			if (!IsCloseToNPC())
+				return GetWalkToActivity();
+			else
+			{
+				if (activity == null)
+					activity = new ActivityInteract(this, FindNPC());
+				return activity;
+			}
 		}
 
 		public override bool ActivityDone(Activity task)
 		{
-			bool childDone = childTask.ActivityDone(task);
-			if (childDone)
+			if (activity == task)
 			{
-				// TODO hmm, my child is done... cool
+				done = true;
+				return true;
 			}
-			return childDone;
+			return false;
 		}
-
 
 	}
 }

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Pather.Parser {
-	public class NodeTask : ASTNode {
+namespace Pather.Parser
+{
+	public class NodeTask : ASTNode
+	{
 		public NodeTask parent;
 		public string type;
 		public string name; // might be null
@@ -11,20 +13,24 @@ namespace Pather.Parser {
 		List<FuncDefinition> funcDefinitions = new List<FuncDefinition>();
 		public List<NodeTask> subTasks = new List<NodeTask>();
 
-		public NodeTask(NodeTask parent) {
+		public NodeTask(NodeTask parent)
+		{
 			this.parent = parent;
 		}
 
-		public void AddDefinition(NodeDefinition def) {
+		public void AddDefinition(NodeDefinition def)
+		{
 			definitions.Add(def);
 		}
 
-		public void AddTask(NodeTask task) {
+		public void AddTask(NodeTask task)
+		{
 			subTasks.Add(task);
 			task.parent = this;
 		}
 
-		public int GetPrio() {
+		public int GetPrio()
+		{
 			Value val = GetValueOfId("Prio");
 
 			if (!val.IsInt())
@@ -33,27 +39,36 @@ namespace Pather.Parser {
 			return val.GetIntValue();
 		}
 
-		public void AddFunction(FuncDefinition fd) {
+		public void AddFunction(FuncDefinition fd)
+		{
 			funcDefinitions.Add(fd);
 		}
 
-		public virtual Value GetValueOfFcall(string def, List<Value> parms) {
+		public virtual Value GetValueOfFcall(string def, List<Value> parms)
+		{
 			int dotIndex = def.IndexOf('.');
 
-			if (dotIndex != -1) {
+			if (dotIndex != -1)
+			{
 				// dot in name, search in named chilren tasks for it
 				String cname = def.Substring(0, dotIndex);
 				String cdef = def.Substring(dotIndex + 1);
 
-				foreach (NodeTask t in subTasks) {
-					if (t.name != null && t.name == cname) {
+				foreach (NodeTask t in subTasks)
+				{
+					if (t.name != null && t.name == cname)
+					{
 						Value v = t.GetValueOfFcall(cdef, parms);
 						return v;
 					}
 				}
-			} else {
-				foreach (FuncDefinition d in funcDefinitions) {
-					if (d.IsNamed(def)) {
+			}
+			else
+			{
+				foreach (FuncDefinition d in funcDefinitions)
+				{
+					if (d.IsNamed(def))
+					{
 						Value val = d.call(parms);
 						return val;
 					}
@@ -66,26 +81,32 @@ namespace Pather.Parser {
 			return null;
 		}
 
-		public bool GetBoolValueOfId(string id) {
+		public bool GetBoolValueOfId(string id)
+		{
 			Value v = GetValueOfId(id);
 			return v.GetBoolValue();
 		}
 
-		public float GetFloatValueOfId(string id) {
+		public float GetFloatValueOfId(string id)
+		{
 			Value v = GetValueOfId(id);
 			return v.GetFloatValue();
 		}
 
-		public int GetIntValueOfId(string id) {
+		public int GetIntValueOfId(string id)
+		{
 			Value v = GetValueOfId(id);
 			return v.GetIntValue();
 		}
 
-		public void SetValueOfId(string def, Value val) {
+		public void SetValueOfId(string def, Value val)
+		{
 			NodeDefinition n = null;
 
-			foreach (NodeDefinition d in definitions) {
-				if (d.IsNamed(def)) n = d;
+			foreach (NodeDefinition d in definitions)
+			{
+				if (d.IsNamed(def))
+					n = d;
 			}
 
 			if (n != null)
@@ -96,23 +117,31 @@ namespace Pather.Parser {
 
 		}
 
-		public virtual Value GetValueOfId(string def) {
+		public virtual Value GetValueOfId(string def)
+		{
 			int dotIndex = def.IndexOf('.');
 
-			if (dotIndex != -1) {
+			if (dotIndex != -1)
+			{
 				// dot in name, search in named chilren tasks for it
 				String cname = def.Substring(0, dotIndex);
 				String cdef = def.Substring(dotIndex + 1);
 
-				foreach (NodeTask t in subTasks) {
-					if (t.name != null && t.name == cname) {
+				foreach (NodeTask t in subTasks)
+				{
+					if (t.name != null && t.name == cname)
+					{
 						Value v = t.GetValueOfId(cdef);
 						return v;
 					}
 				}
-			} else {
-				foreach (NodeDefinition d in definitions) {
-					if (d.IsNamed(def)) {
+			}
+			else
+			{
+				foreach (NodeDefinition d in definitions)
+				{
+					if (d.IsNamed(def))
+					{
 						NodeExpression e = d.GetExpression();
 						Value val = e.GetValue();
 
@@ -122,7 +151,8 @@ namespace Pather.Parser {
 					}
 				}
 
-				if (parent != null) {
+				if (parent != null)
+				{
 					Value e = parent.GetValueOfId(def);
 					return e;
 				}
@@ -132,7 +162,8 @@ namespace Pather.Parser {
 			return null;
 		}
 
-		public virtual NodeExpression GetExpressionOfId(string def) {
+		public virtual NodeExpression GetExpressionOfId(string def)
+		{
 			/*int dotIndex = def.IndexOf('.'); 
 
 			if (dotIndex != -1)
@@ -149,14 +180,17 @@ namespace Pather.Parser {
 			}
 			else*/
 			{
-				foreach (NodeDefinition d in definitions) {
-					if (d.IsNamed(def)) {
+				foreach (NodeDefinition d in definitions)
+				{
+					if (d.IsNamed(def))
+					{
 						return d.GetExpression();
 					}
 				}
 			}
 
-			if (parent != null) {
+			if (parent != null)
+			{
 				NodeExpression e = parent.GetExpressionOfId(def);
 				return e;
 			}
@@ -165,31 +199,37 @@ namespace Pather.Parser {
 			return null;
 		}
 
-		public override void dump(int d) {
+		public override void dump(int d)
+		{
 			Console.WriteLine(prefix(d) + type);
 			Console.WriteLine(prefix(d) + "{");
 
-			foreach (NodeDefinition nd in definitions) {
+			foreach (NodeDefinition nd in definitions)
+			{
 				nd.dump(d + 1);
 			}
 
-			foreach (NodeTask task in subTasks) {
+			foreach (NodeTask task in subTasks)
+			{
 				task.dump(d + 1);
 			}
 
 			Console.WriteLine(prefix(d) + "}");
 		}
 
-		public bool BindSymbols() {
+		public bool BindSymbols()
+		{
 			bool ok = true;
 
 			// Traverse the tree and connect ID expression to their expression
-			foreach (NodeDefinition d in definitions) {
+			foreach (NodeDefinition d in definitions)
+			{
 				NodeExpression e = d.GetExpression();
 				ok &= e.BindSymbols();
 			}
 
-			foreach (NodeTask t in subTasks) {
+			foreach (NodeTask t in subTasks)
+			{
 				ok &= t.BindSymbols();
 			}
 

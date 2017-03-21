@@ -4,34 +4,43 @@ using System.Text;
 
 using Glider.Common.Objects;
 
-namespace Pather {
-	public class NPCDatabase {
-		public class NPC {
+namespace Pather
+{
+	public class NPCDatabase
+	{
+		public class NPC
+		{
 			public String name;
 			public GLocation location;
 			public int faction;
 			public GReaction reaction;
 
-			public override string ToString() {
+			public override string ToString()
+			{
 				return String.Format(PPather.numberFormat, "{0}|{1},{2},{3}|{4}|{5}",
 									 name, location.X, location.Y, location.Z, faction, reaction);
 			}
 
-			public bool FromString(string s) {
+			public bool FromString(string s)
+			{
 				char[] splitter = { '|' };
 				string[] sp = s.Split(splitter);
-				if (sp.Length < 4) return false;
+				if (sp.Length < 4)
+					return false;
 				name = sp[0];
 				string locs = sp[1];
 				char[] splitter2 = { ',' };
 				string[] coords = locs.Split(splitter2);
-				if (coords.Length == 3) {
+				if (coords.Length == 3)
+				{
 
 					float x = float.Parse(coords[0], PPather.numberFormat);
 					float y = float.Parse(coords[1], PPather.numberFormat);
 					float z = float.Parse(coords[2], PPather.numberFormat);
 					location = new GLocation(x, y, z);
-				} else return false;
+				}
+				else
+					return false;
 				faction = Int32.Parse(sp[2], PPather.numberFormat);
 				string rs = sp[3];
 				if (rs == "Friendly")
@@ -52,9 +61,11 @@ namespace Pather {
 		string myFaction = "";
 		bool changed = false;
 
-		public void SetContinent(string continent, string myFaction) {
+		public void SetContinent(string continent, string myFaction)
+		{
 
-			lock (this) {
+			lock (this)
+			{
 				// Continent change
 				Save();
 
@@ -68,21 +79,28 @@ namespace Pather {
 		}
 
 
-		public void Update() {
+		public void Update()
+		{
 
-			lock (this) {
-				if (continent == null) return;
-				if (NPCs == null) return;
+			lock (this)
+			{
+				if (continent == null)
+					return;
+				if (NPCs == null)
+					return;
 				GUnit[] units = GObjectList.GetUnits();
-				foreach (GUnit unit in units) {
+				foreach (GUnit unit in units)
+				{
 					if ((unit.Reaction == GReaction.Friendly || unit.Reaction == GReaction.Neutral)
 						&& !unit.IsPlayer &&
 						  unit.CreatureType != GCreatureType.Critter &&
 						  unit.CreatureType != GCreatureType.Totem &&
-						  !PPather.IsPlayerFaction(unit)) {
+						  !PPather.IsPlayerFaction(unit))
+					{
 						string name = unit.Name;
 						NPC n = null;
-						if (!NPCs.TryGetValue(name, out n)) {
+						if (!NPCs.TryGetValue(name, out n))
+						{
 							n = new NPC();
 							n.name = name;
 							n.faction = unit.FactionID;
@@ -97,19 +115,27 @@ namespace Pather {
 			}
 		}
 
-		public void Save() {
-			if (!changed) return;
-			lock (this) {
-				if (continent == null) return;
+		public void Save()
+		{
+			if (!changed)
+				return;
+			lock (this)
+			{
+				if (continent == null)
+					return;
 				string filename = "PPather\\NPCInfo\\" + continent + "_" + myFaction + ".txt";
-				try {
+				try
+				{
 					System.IO.TextWriter s = System.IO.File.CreateText(filename);
-					foreach (string name in NPCs.Keys) {
+					foreach (string name in NPCs.Keys)
+					{
 						NPC n = NPCs[name];
 						s.WriteLine(n.ToString());
 					}
 					s.Close();
-				} catch (Exception e) {
+				}
+				catch (Exception e)
+				{
 					PPather.WriteLine("!Error:Exception writing NPC data: " + e);
 				}
 				changed = false;
@@ -117,21 +143,28 @@ namespace Pather {
 			}
 		}
 
-		public void Load() {
-			lock (this) {
-				if (continent == null) return;
+		public void Load()
+		{
+			lock (this)
+			{
+				if (continent == null)
+					return;
 				NPCs = new Dictionary<string, NPC>(StringComparer.InvariantCultureIgnoreCase);
 				// Load from file
-				try {
+				try
+				{
 					string filename = "PPather\\NPCInfo\\" + continent + "_" + myFaction + ".txt";
 					System.IO.TextReader s = System.IO.File.OpenText(filename);
 
 					int nr = 0;
 					string line;
-					while ((line = s.ReadLine()) != null) {
+					while ((line = s.ReadLine()) != null)
+					{
 						NPC n = new NPC();
-						if (n.FromString(line)) {
-							if (!NPCs.ContainsKey(n.name)) {
+						if (n.FromString(line))
+						{
+							if (!NPCs.ContainsKey(n.name))
+							{
 								NPCs.Add(n.name, n);
 								nr++;
 							}
@@ -141,7 +174,9 @@ namespace Pather {
 					PPather.WriteLine("Loaded " + nr + " NPCs");
 
 					s.Close();
-				} catch (Exception) {
+				}
+				catch (Exception)
+				{
 					//PPather.WriteLine("Exception reading NPC data: " + e);
 					PPather.WriteLine("!Warning:Failed to load NPC data");
 				}
@@ -149,9 +184,11 @@ namespace Pather {
 			}
 		}
 
-		public NPC Find(string name) {
+		public NPC Find(string name)
+		{
 			NPC n;
-			if (NPCs.TryGetValue(name, out n)) {
+			if (NPCs.TryGetValue(name, out n))
+			{
 				return n;
 			}
 			return null;

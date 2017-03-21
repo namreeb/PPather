@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 using System;
@@ -27,22 +27,27 @@ using Pather.Graph;
 using Pather.Parser;
 using Pather.Helpers.UI;
 
-namespace Pather.Activities {
-	public class ActivityQueue : Activity {
+namespace Pather.Activities
+{
+	public class ActivityQueue : Activity
+	{
 		GUnit npc;
 		String battlefield;
 
 		public ActivityQueue(Task t, GUnit npc, String battlefield)
-			: base(t, "Queue for " + battlefield) {
+			: base(t, "Queue for " + battlefield)
+		{
 			this.npc = npc;
 			this.battlefield = battlefield;
 		}
 
-		public override Location GetLocation() {
+		public override Location GetLocation()
+		{
 			return null; // I will not move
 		}
 
-		public override bool Do() {
+		public override bool Do()
+		{
 			ppather.Face(npc);
 
 			int option = 0;
@@ -92,6 +97,7 @@ namespace Pather.Activities {
 				}
 				else
 					GContext.Main.SendKey("Common.Escape"); // Close whatever frame popped up
+
 				maxtries--;
 			}
 

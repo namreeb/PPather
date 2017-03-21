@@ -7,7 +7,8 @@ using Pather.Helpers.UI;
 using Glider.Common.Objects;
 using System.Xml.XPath;
 
-namespace Pather.Parser {
+namespace Pather.Parser
+{
 	delegate Value FcallDelegate(params Value[] args);
 
 	/// <summary>
@@ -16,8 +17,10 @@ namespace Pather.Parser {
 	/// method will be the name of the available function. All method 
 	/// signatures must match FcallDelegate.
 	/// </summary>
-	static class Fcalls {
-		public static Value QuestStatus(params Value[] args) {
+	static class Fcalls
+	{
+		public static Value QuestStatus(params Value[] args)
+		{
 			String q = args[0].GetStringValue();
 			String status = PPather.GetQuestStatus(q);
 			if (status == null)
@@ -25,38 +28,70 @@ namespace Pather.Parser {
 			return new Value(status);
 		}
 
-		public static Value BGQueued(params Value[] args) {
+		public static Value BGQueued(params Value[] args)
+		{
 			String bf = args[0].GetStringValue();
-			if (bf.Length > 0) {
+			if (bf.Length > 0)
+			{
 				MiniMapBattlefieldFrameState bfState = Tasks.BGQueueTaskManager.GetQueueState(bf);
 				bool isQueued = false;
 				if (bfState == MiniMapBattlefieldFrameState.Queue ||
 					bfState == MiniMapBattlefieldFrameState.CanEnter ||
-					bfState == MiniMapBattlefieldFrameState.Inside) {
+					bfState == MiniMapBattlefieldFrameState.Inside)
+				{
 					isQueued = true;
 				}
 				return new Value(isQueued ? 1 : 0);
-			} else {
+			}
+			else
+			{
 				PPather.WriteLine("*** Warning - BGQueued() called without a battleground name!");
 				PPather.WriteLine("*** Did you mean to use $BGQueued?");
 			}
 			return null;
 		}
 
-		public static Value NearTo(params Value[] args) {
+		public static Value NearTo(params Value[] args)
+		{
 			Location cloc = args[0].GetLocationValue();
-			if (cloc == null) return new Value(0);
+			if (cloc == null)
+				return new Value(0);
 			float howClose = args[1].GetFloatValue();
 			Location mloc = new Location(GContext.Main.Me.Location);
 			float d = mloc.GetDistanceTo(cloc);
 			return new Value((d <= howClose) ? 1 : 0);
 		}
 
-		public static Value HaveBuff(params Value[] args) {
+		public static Value GetState(params Value[] args)
+		{
+			String key = args[0].GetStringValue();
+			if (key != "" && key != null)
+			{
+				String state = PPather.GetToonState(key);
+				if (state != null && state != "") return new Value(state);
+			}
+			return new Value(-1);
+		}
+
+		public static Value QuestExists(params Value[] args)
+		{
+			string quest = args[0].GetStringValue();
+			if (quest != "" && quest != null)
+			{
+				string val = PPather.ToonData.Get("Quest:" + quest);
+				if (val != null && val != "") return new Value(1);
+			}
+			return new Value(0);
+		}
+
+		public static Value HaveBuff(params Value[] args)
+		{
 			string cbuff = args[0].GetStringValue();
-			if (cbuff != "") {
+			if (cbuff != "")
+			{
 				Helpers.Buff Buffs = new Helpers.Buff();
-				if (Buffs.HaveBuff(cbuff)) return new Value(1);
+				if (Buffs.HaveBuff(cbuff))
+					return new Value(1);
 			}
 			return new Value(0);
 		}

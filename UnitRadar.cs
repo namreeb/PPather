@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -62,7 +62,8 @@ namespace Pather
 			}
 			public void Update(int dt)  // dt is milliseconds
 			{
-				if (dt == 0) return;
+				if (dt == 0)
+					return;
 				double ds = (double)dt / 1000.0;
 				double d = oldLocation.GetDistanceTo(unit.Location);
 				movementSpeed = d / ds;
@@ -78,12 +79,13 @@ namespace Pather
 		{
 		}
 
-		
+
 		public float Score(float x, float y, float z)
 		{
 			GLocation l = new GLocation(x, y, z);
 			GLocation me = GContext.Main.Me.Location;
-			if (l.GetDistanceTo(me) > 200.0) return 0;
+			if (l.GetDistanceTo(me) > 200.0)
+				return 0;
 			float s = 0;
 			foreach (UnitData ud in dic.Values)
 			{
@@ -103,7 +105,7 @@ namespace Pather
 					if (d < distance)
 					{
 						float n = distance - d;
-						
+
 						//if(ld < 0)
 						//    n /= -ld+2;
 						s += n;

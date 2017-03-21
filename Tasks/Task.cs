@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -44,18 +44,29 @@ namespace Pather.Tasks
 
 	public abstract class Task
 	{
-		public enum State_e { Idle, Want, Active, Done };
+		public enum State_e
+		{
+			Idle,
+			Want,
+			Active,
+			Done
+		};
 		public bool isActive;
 
 		public Task parent;
 
-		public virtual bool IsParserTask() { return false; }
+		public virtual bool IsParserTask()
+		{
+			return false;
+		}
 		public virtual State_e State
 		{
 			get
 			{
-				if (isActive) return State_e.Active;
-				if (IsFinished()) return State_e.Done;
+				if (isActive)
+					return State_e.Active;
+				if (IsFinished())
+					return State_e.Done;
 				return State_e.Idle;
 			}
 		}
@@ -84,7 +95,9 @@ namespace Pather.Tasks
 		public abstract Activity GetActivity();
 		public abstract bool ActivityDone(Activity task); // called when activity is done
 
-		public virtual void GetParams(List<string> l) { }
+		public virtual void GetParams(List<string> l)
+		{
+		}
 
 	}
 }

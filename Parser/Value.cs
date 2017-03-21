@@ -5,8 +5,10 @@ using System.Globalization;
 
 using Pather.Graph;
 
-namespace Pather.Parser {
-	public class Value {
+namespace Pather.Parser
+{
+	public class Value
+	{
 		public static Value NilValue = new Value("");
 		public static Value FalseValue = new Value("false");
 		public static Value TrueValue = new Value("true");
@@ -16,27 +18,34 @@ namespace Pather.Parser {
 		List<Value> values = null; // for collections
 		Dictionary<String, Value> dic = null; // for associative arrays
 
-		public Value(string val) {
+		public Value(string val)
+		{
 			value = val;
 		}
 
-		public Value(int val) {
+		public Value(int val)
+		{
 			value = val.ToString();
 		}
 
-		public Value(float val) {
+		public Value(float val)
+		{
 			value = val.ToString();
 		}
 
-		public Value(List<Value> val) {
+		public Value(List<Value> val)
+		{
 			values = val;
 		}
 
-		public Value(Dictionary<string, Value> val) {
-			if (val.Comparer != StringComparer.InvariantCultureIgnoreCase) {
+		public Value(Dictionary<string, Value> val)
+		{
+			if (val.Comparer != StringComparer.InvariantCultureIgnoreCase)
+			{
 				Dictionary<string, Value> tmp = new Dictionary<string, Value>(StringComparer.InvariantCultureIgnoreCase);
 
-				foreach (string key in val.Keys) {
+				foreach (string key in val.Keys)
+				{
 					tmp[key] = val[key];
 				}
 
@@ -47,10 +56,12 @@ namespace Pather.Parser {
 		}
 
 		// handy utility function 
-		public Value(Dictionary<String, int> val) {
+		public Value(Dictionary<String, int> val)
+		{
 			dic = new Dictionary<string, Value>(StringComparer.InvariantCultureIgnoreCase);
 
-			foreach (string key in val.Keys) {
+			foreach (string key in val.Keys)
+			{
 				int c = 0;
 				val.TryGetValue(key, out c);
 				Value v = new Value(c);
@@ -58,10 +69,12 @@ namespace Pather.Parser {
 			}
 		}
 
-		public Value(Dictionary<string, string> val) {
+		public Value(Dictionary<string, string> val)
+		{
 			dic = new Dictionary<string, Value>(StringComparer.InvariantCultureIgnoreCase);
 
-			foreach (string key in val.Keys) {
+			foreach (string key in val.Keys)
+			{
 				string s = "";
 				val.TryGetValue(key, out s);
 				Value v = new Value(s);
@@ -69,21 +82,29 @@ namespace Pather.Parser {
 			}
 		}
 
-		public bool GetBoolValue() {
+		public bool GetBoolValue()
+		{
 			string s = GetStringValue();
-			if (s == "false" || s == "False") return false;
-			if (s == "0") return false;
-			if (s == "") return false;
+			if (s == "false" || s == "False")
+				return false;
+			if (s == "0")
+				return false;
+			if (s == "")
+				return false;
 			return true;
 		}
 
-		public string GetStringValue() {
-			if (value != null) return value;
+		public string GetStringValue()
+		{
+			if (value != null)
+				return value;
 
-			if (values != null) {
+			if (values != null)
+			{
 				StringBuilder sb = new StringBuilder("[");
 
-				foreach (Value v in values) {
+				foreach (Value v in values)
+				{
 					sb.Append(v.GetStringValue());
 					sb.Append(", ");
 				}
@@ -92,10 +113,12 @@ namespace Pather.Parser {
 				return sb.ToString();
 			}
 
-			if (dic != null) {
+			if (dic != null)
+			{
 				StringBuilder sb = new StringBuilder("{");
 
-				foreach (String s in dic.Keys) {
+				foreach (String s in dic.Keys)
+				{
 					Value val = dic[s];
 					sb.Append(s);
 					sb.Append(" => ");
@@ -110,36 +133,51 @@ namespace Pather.Parser {
 			return "";
 		}
 
-		public bool IsInt() {
-			if (this == NilValue) return true;
+		public bool IsInt()
+		{
+			if (this == NilValue)
+				return true;
 
-			try {
+			try
+			{
 				Int32.Parse(GetStringValue());
 				return true;
-			} catch { }
+			}
+			catch
+			{
+			}
 
 			return false;
 		}
 
-		public bool IsFloat() {
-			if (this == NilValue) return true;
+		public bool IsFloat()
+		{
+			if (this == NilValue)
+				return true;
 
-			try {
+			try
+			{
 				Single.Parse(GetStringValue(), CultureInfo.InvariantCulture);
 				return true;
-			} catch { }
+			}
+			catch
+			{
+			}
 			return false;
 		}
 
-		public bool IsCollection() {
+		public bool IsCollection()
+		{
 			return values != null;
 		}
 
-		public bool IsAssocArray() {
+		public bool IsAssocArray()
+		{
 			return dic != null;
 		}
 
-		public void SetAssocValue(string key, Value value) {
+		public void SetAssocValue(string key, Value value)
+		{
 			if (dic == null)
 				dic = new Dictionary<string, Value>(StringComparer.InvariantCultureIgnoreCase);
 
@@ -150,46 +188,66 @@ namespace Pather.Parser {
 			dic.Add(key, value);
 		}
 
-		public Value GetAssocValue(string key) {
-			if (dic == null) return null;
+		public Value GetAssocValue(string key)
+		{
+			if (dic == null)
+				return null;
 
 			Value val = null;
 
 			dic.TryGetValue(key, out val);
 
-			if (val == null) return NilValue;
+			if (val == null)
+				return NilValue;
 
 			return val;
 		}
 
-		public int GetIntValue() {
-			if (this == NilValue) return 0;
+		public int GetIntValue()
+		{
+			if (this == NilValue)
+				return 0;
 
-			try {
+			try
+			{
 				return Int32.Parse(GetStringValue());
-			} catch { }
+			}
+			catch
+			{
+			}
 
 			return 0;
 		}
 
-		public float GetFloatValue() {
-			if (this == NilValue) return 0;
+		public float GetFloatValue()
+		{
+			if (this == NilValue)
+				return 0;
 
-			try {
+			try
+			{
 				return Single.Parse(GetStringValue(), CultureInfo.InvariantCulture);
-			} catch { }
+			}
+			catch
+			{
+			}
 
 			return 0f;
 		}
 
-		public List<string> GetStringCollectionValues() {
+		public List<string> GetStringCollectionValues()
+		{
 			List<string> vals = new List<string>();
 
-			if (values == null) {
+			if (values == null)
+			{
 				if (value != null && this != NilValue)
 					vals.Add(GetStringValue()); // not a collection 
-			} else {
-				foreach (Value v in values) {
+			}
+			else
+			{
+				foreach (Value v in values)
+				{
 					vals.Add(v.GetStringValue());
 				}
 			}
@@ -197,14 +255,19 @@ namespace Pather.Parser {
 			return vals;
 		}
 
-		public List<int> GetIntCollectionValues() {
+		public List<int> GetIntCollectionValues()
+		{
 			List<int> vals = new List<int>();
 
-			if (values == null) {
+			if (values == null)
+			{
 				if (value != null && this != NilValue)
 					vals.Add(GetIntValue()); // not a collection 
-			} else {
-				foreach (Value v in values) {
+			}
+			else
+			{
+				foreach (Value v in values)
+				{
 					vals.Add(v.GetIntValue());
 				}
 			}
@@ -214,16 +277,21 @@ namespace Pather.Parser {
 
 
 		// this has to be a collection of floats with at least 3 items
-		public Location GetLocationValue() {
-			if (values == null) return null;
+		public Location GetLocationValue()
+		{
+			if (values == null)
+				return null;
 
 			float x = 0f, y = 0f, z = 0f;
 
-			try {
+			try
+			{
 				x = values[0].GetFloatValue();
 				y = values[1].GetFloatValue();
 				z = values[2].GetFloatValue();
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				throw new InvalidOperationException(
 					"Current value doesn't seem to be a valid Location", e);
 			}
@@ -233,7 +301,8 @@ namespace Pather.Parser {
 
 		public Pather.Tasks.BuySet GetBuySetValue()
 		{
-			if (values == null) return null;
+			if (values == null)
+				return null;
 			string item = "", minAmount = "", buyAmount = "";
 			try
 			{
@@ -249,8 +318,10 @@ namespace Pather.Parser {
 			return new Pather.Tasks.BuySet(item, minAmount, buyAmount);
 		}
 
-		public List<Value> GetCollectionValue() {
-			if (values != null) return values;
+		public List<Value> GetCollectionValue()
+		{
+			if (values != null)
+				return values;
 
 			List<Value> c = new List<Value>();
 
@@ -260,7 +331,8 @@ namespace Pather.Parser {
 			return c;
 		}
 
-		public override string ToString() {
+		public override string ToString()
+		{
 			return GetStringValue();
 		}
 	}

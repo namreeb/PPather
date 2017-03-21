@@ -6,51 +6,64 @@ using System.Text;
 using Glider.Common.Objects;
 using Pather;
 
-namespace Pather.Helpers.UI {
+namespace Pather.Helpers.UI
+{
 	// static methods to handle popups
-	public class Popup {
+	public class Popup
+	{
 		// 1-4
-		public static bool IsVisible(int popNr) {
+		public static bool IsVisible(int popNr)
+		{
 			String name = "StaticPopup" + popNr;
 			GInterfaceObject obj = GContext.Main.Interface.GetByName(name);
-			if (obj != null && obj.IsVisible) return true;
+			if (obj != null && obj.IsVisible)
+				return true;
 			return false;
 		}
 
 
-		public static bool IsCloseable(int popNr) {
+		public static bool IsCloseable(int popNr)
+		{
 			String name = "StaticPopup" + popNr + "CloseButton";
 			GInterfaceObject obj = GContext.Main.Interface.GetByName(name);
-			if (obj != null && obj.IsVisible) return true;
+			if (obj != null && obj.IsVisible)
+				return true;
 			return false;
 		}
 
 
-		public static string GetText(int popNr) {
+		public static string GetText(int popNr)
+		{
 			String name = "StaticPopup" + popNr;
 			GInterfaceObject obj = GContext.Main.Interface.GetByName(name);
-			if (obj == null || !obj.IsVisible) return null;
+			if (obj == null || !obj.IsVisible)
+				return null;
 			GInterfaceObject text = obj.GetChildObject(name + "Text");
-			if (text == null) return null;
+			if (text == null)
+				return null;
 			return text.LabelText;
 
 		}
 
-		public static bool ClickButton(int popNr, int buttonNr) {
+		public static bool ClickButton(int popNr, int buttonNr)
+		{
 			String name = "StaticPopup" + popNr + "Button" + buttonNr;
 			GInterfaceObject obj = GContext.Main.Interface.GetByName(name);
-			if (obj != null && obj.IsVisible) {
-				Functions.Click(obj);
+			if (obj != null && obj.IsVisible)
+			{
+				Functions.Click(obj, false);
 				return true;
 			}
 			return false;
 		}
 
-		public static bool ClickClose(int popNr) {
+		public static bool ClickClose(int popNr)
+		{
 			String name = "StaticPopup" + popNr + "CloseButton";
 			GInterfaceObject obj = GContext.Main.Interface.GetByName(name);
-			if (obj != null && obj.IsVisible) {
-				Functions.Click(obj);
+			if (obj != null && obj.IsVisible)
+			{
+				Functions.Click(obj, false);
 				return true;
 			}
 			return false;

@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -41,10 +41,12 @@ namespace Pather.Tasks
 		{
 			Name = node.GetValueOfId("Name").GetStringValue();
 			ID = node.GetValueOfId("ID").GetStringValue();
-			if (ID == null || ID == "") ID = Name;
+			if (ID == null || ID == "")
+				ID = Name;
 
 			Reward = node.GetValueOfId("Reward").GetIntValue();
-			if (Reward == 0) Reward = 1;
+			if (Reward == 0)
+				Reward = 1;
 
 			Repeatable = node.GetValueOfId("Repeatable").GetBoolValue();
 		}
@@ -62,11 +64,12 @@ namespace Pather.Tasks
 			l.Add("Repeatable");
 			base.GetParams(l);
 		}
-		public override bool IsFinished()
-		{
-			if (ppather.IsQuestDone(ID)) return true;
-			return false;
-		}
+
+        public override bool IsFinished()
+        {
+            if (PPather.GetQuestStatus(ID) == "completed" || PPather.GetQuestStatus(ID) == "failed" || PPather.GetQuestStatus(ID) == "completedr") return true;
+            return false;
+        }
 
 		public override bool WantToDoSomething()
 		{
@@ -92,7 +95,7 @@ namespace Pather.Tasks
 				}
 				return gossipActivity;
 			}
-			
+
 		}
 
 

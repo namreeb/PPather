@@ -4,8 +4,10 @@ using System.Text;
 
 using Glider.Common.Objects;
 
-namespace Pather.Graph {
-	public class GraphChunk {
+namespace Pather.Graph
+{
+	public class GraphChunk
+	{
 		public const int CHUNK_SIZE = 512;
 
 		float base_x, base_y;
@@ -15,7 +17,8 @@ namespace Pather.Graph {
 
 		Spot[,] spots;
 
-		public GraphChunk(float base_x, float base_y, int ix, int iy) {
+		public GraphChunk(float base_x, float base_y, int ix, int iy)
+		{
 			this.base_x = base_x;
 			this.base_y = base_y;
 			this.ix = ix;
@@ -24,29 +27,35 @@ namespace Pather.Graph {
 			modified = false;
 		}
 
-		public void Clear() {
+		public void Clear()
+		{
 			foreach (Spot s in spots)
-				if (s != null) s.traceBack = null;
+				if (s != null)
+					s.traceBack = null;
 
 			spots = null;
 		}
 
-		private void LocalCoords(float x, float y, out int ix, out int iy) {
+		private void LocalCoords(float x, float y, out int ix, out int iy)
+		{
 			ix = (int)(x - base_x);
 			iy = (int)(y - base_y);
 		}
 
-		public Spot GetSpot2D(float x, float y) {
+		public Spot GetSpot2D(float x, float y)
+		{
 			int ix, iy;
 			LocalCoords(x, y, out ix, out iy);
 			Spot s = spots[ix, iy];
 			return s;
 		}
 
-		public Spot GetSpot(float x, float y, float z) {
+		public Spot GetSpot(float x, float y, float z)
+		{
 			Spot s = GetSpot2D(x, y);
 
-			while (s != null && !s.IsCloseZ(z)) {
+			while (s != null && !s.IsCloseZ(z))
+			{
 				s = s.next;
 			}
 
@@ -55,9 +64,11 @@ namespace Pather.Graph {
 
 		// return old spot at conflicting poision
 		// or the same as passed the function if all was ok
-		public Spot AddSpot(Spot s) {
+		public Spot AddSpot(Spot s)
+		{
 			Spot old = GetSpot(s.X, s.Y, s.Z);
-			if (old != null) return old;
+			if (old != null)
+				return old;
 			int x, y;
 
 			s.chunk = this;
@@ -73,12 +84,16 @@ namespace Pather.Graph {
 
 
 
-		public List<Spot> GetAllSpots() {
+		public List<Spot> GetAllSpots()
+		{
 			List<Spot> l = new List<Spot>();
-			for (int x = 0; x < CHUNK_SIZE; x++) {
-				for (int y = 0; y < CHUNK_SIZE; y++) {
+			for (int x = 0; x < CHUNK_SIZE; x++)
+			{
+				for (int y = 0; y < CHUNK_SIZE; y++)
+				{
 					Spot s = spots[x, y];
-					while (s != null) {
+					while (s != null)
+					{
 						l.Add(s);
 						s = s.next;
 					}
@@ -87,7 +102,8 @@ namespace Pather.Graph {
 			return l;
 		}
 
-		private string FileName() {
+		private string FileName()
+		{
 			return String.Format("c_{0,3:000}_{1,3:000}.bin", ix, iy);
 		}
 
@@ -110,7 +126,8 @@ namespace Pather.Graph {
 		//     float z;
 
 
-		public bool Load(string baseDir) {
+		public bool Load(string baseDir)
+		{
 			string fileName = FileName();
 			string filenamebin = baseDir + fileName;
 
@@ -166,10 +183,12 @@ namespace Pather.Graph {
 				PPather.WriteLine(e.Message);
 			}
 
-			if (file != null) {
+			if (file != null)
+			{
 				file.Close();
 			}
-			if (stream != null) {
+			if (stream != null)
+			{
 				stream.Close();
 			}
 
@@ -183,8 +202,10 @@ namespace Pather.Graph {
 
 
 
-		public bool Save(string baseDir) {
-			if (!modified) return true; // doh
+		public bool Save(string baseDir)
+		{
+			if (!modified)
+				return true; // doh
 
 			string fileName = FileName();
 			string filename = baseDir + fileName;
@@ -193,24 +214,28 @@ namespace Pather.Graph {
 			System.IO.BinaryWriter file = null;
 
 			//try {
-			if(!System.IO.Directory.Exists(baseDir))
+			if (!System.IO.Directory.Exists(baseDir))
 				System.IO.Directory.CreateDirectory(baseDir);
 			//} catch { };
 
 			int n_spots = 0;
 			int n_steps = 0;
-			try {
+			try
+			{
 
 				fileout = System.IO.File.Create(filename + ".new");
 
-				if (fileout != null) {
+				if (fileout != null)
+				{
 					file = new System.IO.BinaryWriter(fileout);
 
-					if (file != null) {
+					if (file != null)
+					{
 						file.Write(FILE_MAGIC);
 
 						List<Spot> spots = GetAllSpots();
-						foreach (Spot s in spots) {
+						foreach (Spot s in spots)
+						{
 							file.Write(SPOT_MAGIC);
 							file.Write((uint)0); // reserved
 							file.Write((uint)s.flags);
@@ -219,7 +244,8 @@ namespace Pather.Graph {
 							file.Write((float)s.Z);
 							uint n_paths = (uint)s.n_paths;
 							file.Write((uint)n_paths);
-							for (uint i = 0; i < n_paths; i++) {
+							for (uint i = 0; i < n_paths; i++)
+							{
 								uint off = i * 3;
 								file.Write((float)s.paths[off]);
 								file.Write((float)s.paths[off + 1]);
@@ -231,12 +257,16 @@ namespace Pather.Graph {
 						file.Write(FILE_ENDMAGIC);
 					}
 
-					if (file != null) {
-						file.Close(); file = null;
+					if (file != null)
+					{
+						file.Close();
+						file = null;
 					}
 
-					if (fileout != null) {
-						fileout.Close(); fileout = null;
+					if (fileout != null)
+					{
+						fileout.Close();
+						fileout = null;
 					}
 
 					String old = filename + ".bak";
@@ -250,28 +280,37 @@ namespace Pather.Graph {
 						System.IO.File.Delete(old);
 
 					modified = false;
-				} else {
+				}
+				else
+				{
 					Log("Save failed");
 				}
 				Log("Saved " + fileName + " " + n_spots + " spots " + n_steps + " steps");
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				Log("Save failed " + e);
 			}
 
-			if (file != null) {
-				file.Close(); file = null;
+			if (file != null)
+			{
+				file.Close();
+				file = null;
 			}
 
-			if (fileout != null) {
-				fileout.Close(); fileout = null;
+			if (fileout != null)
+			{
+				fileout.Close();
+				fileout = null;
 			}
 
-			
+
 
 			return false;
 		}
 
-		private void Log(String s) {
+		private void Log(String s)
+		{
 			//Console.WriteLine(s);
 			PPather.WriteLine(s);
 		}

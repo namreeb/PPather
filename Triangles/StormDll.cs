@@ -42,50 +42,50 @@ BOOL  WINAPI SFileReadFile(HANDLE hFile, VOID * lpBuffer, DWORD dwToRead,
 // Note that this function is internally called by SFileFindFirstFile
 int   WINAPI SFileAddListFile(HANDLE hMpq, const char * szListFile);
 
-		  
+          
 		 */
 		[DllImport("PPather\\StormLib.dll")]
 		public static extern uint SFileGetLocale();
 
 		[DllImport("PPather\\StormLib.dll")]
-		public static extern bool SFileOpenArchive([MarshalAs(UnmanagedType.LPStr)]string szMpqName, 
-							  uint dwPriority, uint dwFlags, 
-							  void ** phMpq);
-		
+		public static extern bool SFileOpenArchive([MarshalAs(UnmanagedType.LPStr)]string szMpqName,
+							  uint dwPriority, uint dwFlags,
+							  void** phMpq);
+
 		[DllImport("PPather\\StormLib.dll")]
-		public static extern bool SFileCloseArchive(void *hMpq);
+		public static extern bool SFileCloseArchive(void* hMpq);
 
 
 		[DllImport("PPather\\StormLib.dll")]
-		public static extern bool SFileOpenFileEx(void *hMpq, 
-								[MarshalAs(UnmanagedType.LPStr)] string szFileName, 
-								uint dwSearchScope, 
-								void ** phFile);
-		
-		[DllImport("PPather\\StormLib.dll")]
-		public static extern bool SFileCloseFile(void * hFile);
+		public static extern bool SFileOpenFileEx(void* hMpq,
+								[MarshalAs(UnmanagedType.LPStr)] string szFileName,
+								uint dwSearchScope,
+								void** phFile);
 
 		[DllImport("PPather\\StormLib.dll")]
-		public static extern uint SFileGetFilePos(void * hFile, uint * pdwFilePosHigh);
-		
-		[DllImport("PPather\\StormLib.dll")]
-		public static extern uint SFileGetFileSize(void *  hFile, uint * pdwFileSizeHigh);
+		public static extern bool SFileCloseFile(void* hFile);
 
 		[DllImport("PPather\\StormLib.dll")]
-		public static extern uint SFileSetFilePointer(void *  hFile, 
-					int lFilePos, int * pdwFilePosHigh, uint dwMethod);
+		public static extern uint SFileGetFilePos(void* hFile, uint* pdwFilePosHigh);
 
 		[DllImport("PPather\\StormLib.dll")]
-		public static extern bool SFileReadFile(void *  hFile, void * lpBuffer, uint dwToRead, 
-						   uint * pdwRead, void *lpOverlapped);
-		
+		public static extern uint SFileGetFileSize(void* hFile, uint* pdwFileSizeHigh);
+
 		[DllImport("PPather\\StormLib.dll")]
-		public static extern bool SFileExtractFile(void * hMpq, 
+		public static extern uint SFileSetFilePointer(void* hFile,
+					int lFilePos, int* pdwFilePosHigh, uint dwMethod);
+
+		[DllImport("PPather\\StormLib.dll")]
+		public static extern bool SFileReadFile(void* hFile, void* lpBuffer, uint dwToRead,
+						   uint* pdwRead, void* lpOverlapped);
+
+		[DllImport("PPather\\StormLib.dll")]
+		public static extern bool SFileExtractFile(void* hMpq,
 					[MarshalAs(UnmanagedType.LPStr)] string szToExtract,
 					[MarshalAs(UnmanagedType.LPStr)] string szExtracted);
 
 		[DllImport("PPather\\StormLib.dll")]
-		public static extern bool SFileHasFile(void *hMpq, 
+		public static extern bool SFileHasFile(void* hMpq,
 					[MarshalAs(UnmanagedType.LPStr)] string szFileName);
 
 		/*
@@ -101,157 +101,163 @@ int   WINAPI SFileAddListFile(HANDLE hMpq, const char * szListFile);
 			return StormDll.SFileGetLocale();
 		}
 	}
-		public unsafe class ArchiveSet
+	public unsafe class ArchiveSet
+	{
+		private List<Archive> archives = new List<Archive>();
+		private string GameDir = ".\\";
+		public void SetGameDir(string dir)
 		{
-			private List<Archive> archives = new List<Archive>();
-			private string GameDir = ".\\";
-			public void SetGameDir(string dir)
-			{
-				GameDir = dir;
-			}
-			public string SetGameDirFromReg()
-			{
-				RegistryKey key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Blizzard Entertainment\\World of Warcraft");
-				if (key == null) return null;
-				Object val = key.GetValue("InstallPath");
-				if (val == null) return null;
-				string s = val.ToString();
-				SetGameDir(s+ "Data\\");
-				return s;
-			}
+			GameDir = dir;
+		}
+		public string SetGameDirFromReg()
+		{
+			RegistryKey key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey("SOFTWARE\\Blizzard Entertainment\\World of Warcraft");
+			if (key == null)
+				return null;
+			Object val = key.GetValue("InstallPath");
+			if (val == null)
+				return null;
+			string s = val.ToString();
+			SetGameDir(s + "Data\\");
+			return s;
+		}
 
-			public bool AddArchive(string file)
+		public bool AddArchive(string file)
+		{
+			Archive a = new Archive(GameDir + file, 0, 0);
+			if (a.IsOpen())
 			{
-				Archive a = new Archive(GameDir + file, 0,0);
-				if (a.IsOpen())
-				{
-					archives.Add(a);
-				   System.Console.WriteLine("Add archive " + file);
+				archives.Add(a);
+				System.Console.WriteLine("Add archive " + file);
+				return true;
+			}
+			return false;
+		}
+		public int AddArchives(string[] files)
+		{
+			int n = 0;
+			foreach (string s in files)
+			{
+				if (AddArchive(s))
+					n++;
+			}
+			return n;
+		}
+		public bool HasFile(string name)
+		{
+			foreach (Archive a in archives)
+			{
+				if (a.HasFile(name))
 					return true;
-				}
-				return false; 
 			}
-			public int AddArchives(string[] files)
-			{
-				int n = 0;
-				foreach (string s in files)
-				{
-					if (AddArchive(s)) n++; 
-				}
-				return n; 
-			}
-			public bool HasFile(string name)
-			{
-				foreach (Archive a in archives)
-				{
-					if (a.HasFile(name)) return true;
-				}
-				return false;
-			}
-
-			public bool ExtractFile(string from, string to)
-			{
-				foreach (Archive a in archives)
-				{
-					if (a.HasFile(from))
-					{
-						GContext.Main.Debug("Extract " + from);
-						bool ok = a.ExtractFile(from, to);
-						GContext.Main.Debug("  result: " + ok);
-						return ok;
-					}
-				}
-				return false;
-			}
-			public void Close()
-			{
-				foreach (Archive a in archives)
-				{
-					a.Close();
-				}
-				archives.Clear(); 
-			}
+			return false;
 		}
 
-		public unsafe class Archive
+		public bool ExtractFile(string from, string to)
 		{
-			private void* handle = null;
+			foreach (Archive a in archives)
+			{
+				if (a.HasFile(from))
+				{
+					GContext.Main.Debug("Extract " + from);
+					bool ok = a.ExtractFile(from, to);
+					GContext.Main.Debug("  result: " + ok);
+					return ok;
+				}
+			}
+			return false;
+		}
+		public void Close()
+		{
+			foreach (Archive a in archives)
+			{
+				a.Close();
+			}
+			archives.Clear();
+		}
+	}
 
-			public Archive(string file, uint Prio, uint Flags)
-			{
-				bool r = Open(file, Prio, Flags);
-			}
-			public bool IsOpen()
-			{
-				return handle != null;
-			}
+	public unsafe class Archive
+	{
+		private void* handle = null;
 
-			private bool Open(string file, uint Prio, uint Flags)
-			{
-				void* h; 
-				void** hp = &h;
-				bool r =  StormDll.SFileOpenArchive(file, Prio, Flags, hp);
-				handle = h;
-				return r;
-			}
-
-			public bool Close()
-			{
-				bool r = StormDll.SFileCloseArchive(handle);
-				if (r) handle = null;
-				return r;
-			}
-
-			public File OpenFile(string szFileName, uint dwSearchScope)
-			{
-				void* h;
-				void** hp = &h;
-				bool r = StormDll.SFileOpenFileEx(handle, szFileName, dwSearchScope, hp);
-				if (!r)
-					return null;
-				return new File(this, h);
-			}
-
-			public bool HasFile(string name)
-			{
-				bool r = StormDll.SFileHasFile(handle, name);
-				return r;
-			}
-
-			public bool ExtractFile(string from, string to)
-			{
-				bool r = StormDll.SFileExtractFile(handle, from, to);
-				return r;
-			}
-				
+		public Archive(string file, uint Prio, uint Flags)
+		{
+			bool r = Open(file, Prio, Flags);
+		}
+		public bool IsOpen()
+		{
+			return handle != null;
 		}
 
-		public unsafe class File
-		{ 
-			void *handle;
-			Archive archive;
-			public File(Archive a, void *h)
-			{
-				archive = a;
-				handle = h;
-			}
-
-			public bool Close()
-			{
-				bool r = StormDll.SFileCloseFile(handle);
-				if (r) handle = null;
-				return r;
-			}
-
-			public ulong GetSize()
-			{
-				uint high;
-				uint* phigh = &high;
-				uint low = StormDll.SFileGetFileSize(handle, phigh);
-				//if (low == 0xffffffff)
-				//    return 0;
-				return low;
-			}
+		private bool Open(string file, uint Prio, uint Flags)
+		{
+			void* h;
+			void** hp = &h;
+			bool r = StormDll.SFileOpenArchive(file, Prio, Flags, hp);
+			handle = h;
+			return r;
 		}
-	
+
+		public bool Close()
+		{
+			bool r = StormDll.SFileCloseArchive(handle);
+			if (r)
+				handle = null;
+			return r;
+		}
+
+		public File OpenFile(string szFileName, uint dwSearchScope)
+		{
+			void* h;
+			void** hp = &h;
+			bool r = StormDll.SFileOpenFileEx(handle, szFileName, dwSearchScope, hp);
+			if (!r)
+				return null;
+			return new File(this, h);
+		}
+
+		public bool HasFile(string name)
+		{
+			bool r = StormDll.SFileHasFile(handle, name);
+			return r;
+		}
+
+		public bool ExtractFile(string from, string to)
+		{
+			bool r = StormDll.SFileExtractFile(handle, from, to);
+			return r;
+		}
+
+	}
+
+	public unsafe class File
+	{
+		void* handle;
+		Archive archive;
+		public File(Archive a, void* h)
+		{
+			archive = a;
+			handle = h;
+		}
+
+		public bool Close()
+		{
+			bool r = StormDll.SFileCloseFile(handle);
+			if (r)
+				handle = null;
+			return r;
+		}
+
+		public ulong GetSize()
+		{
+			uint high;
+			uint* phigh = &high;
+			uint low = StormDll.SFileGetFileSize(handle, phigh);
+			//if (low == 0xffffffff)
+			//    return 0;
+			return low;
+		}
+	}
+
 }

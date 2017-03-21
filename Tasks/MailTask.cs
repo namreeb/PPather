@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -27,85 +27,116 @@ using Pather.Graph;
 using Pather.Parser;
 using Pather.Helpers.UI;
 
-namespace Pather.Tasks {
-	public class MailTask : ParserTask {
+namespace Pather.Tasks
+{
+	public class MailTask : ParserTask
+	{
 		GNode mailbox;
 		Location location;
 		bool UseMount;
 
 		public MailTask(PPather pather, NodeTask node)
-			: base(pather, node) {
+			: base(pather, node)
+		{
 			location = node.GetValueOfId("Location").GetLocationValue();
 			UseMount = node.GetBoolValueOfId("UseMount");
 		}
 
-		public override void GetParams(List<string> l) {
+		public override void GetParams(List<string> l)
+		{
 			l.Add("To");
 			l.Add("Items");
 			l.Add("FullStacksOnly");
 			l.Add("Location");
 			l.Add("MinFreeBagSlots");
 			l.Add("UseMount");
+            l.Add("BlacklistTime");
+            l.Add("MailWhites");
+            l.Add("MailGreens");
+            l.Add("MailBlues");
+            l.Add("MailEpics");
 			base.GetParams(l);
 		}
 
 		#region Gets
 
-		private int GetMinFreeBagslots() {
+		private int GetMinFreeBagslots()
+		{
 			Value v = nodetask.GetValueOfId("MinFreeBagSlots");
-			if (v == null) return -1;
+			if (v == null)
+				return -1;
 			return v.GetIntValue();
 		}
 
-		private int GetFreeBagslots() {
+		private int GetFreeBagslots()
+		{
 			return nodetask.GetIntValueOfId("FreeBagSlots");
 		}
 
-		private string GetRecipient() {
+		private string GetRecipient()
+		{
 			return nodetask.GetValueOfId("To").GetStringValue();
 		}
 
-		private List<string> GetItems() {
+		private List<string> GetItems()
+		{
 			Value v = nodetask.GetValueOfId("Items");
-			if (v == null) return null;
+			if (v == null)
+				return null;
 			return v.GetStringCollectionValues();
 		}
 
-		private bool GetFullStacksOnly() {
+		private bool GetFullStacksOnly()
+		{
 			Value v = nodetask.GetValueOfId("FullStacksOnly");
-			if (v == null) return false;
+			if (v == null)
+				return false;
 			return v.GetBoolValue();
 		}
 
-		private List<string> GetProtectedItems() {
+		private List<string> GetProtectedItems()
+		{
 			Value v = nodetask.GetValueOfId("Protected");
-			if (v == null) return null;
+			if (v == null)
+				return null;
 			return v.GetStringCollectionValues();
 		}
 
-		private bool GetMailGreens() {
+        private bool GetMailWhites()
+        {
+            return nodetask.GetBoolValueOfId("MailWhites");
+        }
+
+		private bool GetMailGreens()
+		{
 			return nodetask.GetBoolValueOfId("MailGreens");
 		}
 
-		private bool GetMailBlues() {
+		private bool GetMailBlues()
+		{
 			return nodetask.GetBoolValueOfId("MailBlues");
 		}
 
-		private bool GetMailEpics() {
+		private bool GetMailEpics()
+		{
 			return nodetask.GetBoolValueOfId("MailEpics");
 		}
 		#endregion
 
-		public override bool IsFinished() {
-			if (!NeedMail()) return true;
+		public override bool IsFinished()
+		{
+			if (!NeedMail())
+				return true;
 			return false;
 		}
 
-		public override string ToString() {
+		public override string ToString()
+		{
 			return "Mailing items";
 		}
 
-		private bool ValidItem(GItem item) {
+		private bool ValidItem(GItem item)
+		{
 			List<string> prots = GetProtectedItems();
 			if (item.IsSoulbound ||
 				((prots != null) && prots.Contains(item.Name)))
@@ -113,17 +144,32 @@ namespace Pather.Tasks {
 			return true;
 		}
 
-		private bool NeedMail() {
+		private bool NeedMail()
+		{
 			BagManager bMan = new BagManager();
 			bMan.UpdateItems();
 			GItem[] bitems = bMan.GetAllItems();
 			List<string> items = GetItems();
-			foreach (string item in items) {
-				foreach (GItem bitem in bitems) {
-					if (bitem.Name.Contains(item) && ValidItem(bitem)) {
-						if (!GetFullStacksOnly()) {
+            foreach (GItem bitem in bitems) 
+			{
+                if (bitem.Definition.Quality == GItemQuality.Common && GetMailWhites() && ValidItem(bitem))
+                    return true;
+                if (bitem.Definition.Quality == GItemQuality.Uncommon && GetMailGreens() && ValidItem(bitem))
+                    return true;
+                if (bitem.Definition.Quality == GItemQuality.Rare && GetMailBlues() && ValidItem(bitem))
+                    return true;
+                if (bitem.Definition.Quality == GItemQuality.Epic && GetMailEpics() && ValidItem(bitem))
+                    return true;
+                foreach (string item in items)
+				{
+					if (bitem.Name.Contains(item) && ValidItem(bitem))
+					{
+						if (!GetFullStacksOnly())
+						{
 							return true;
-						} else {
+						}
+						else
+						{
 							PPather.WriteLine(string.Format("[{0}]x{1} ==? {2}", bitem.Name, bitem.StackSize, bitem.Definition.StackSize));
 							if (bitem.StackSize == bitem.Definition.StackSize)
 								return true;
@@ -134,17 +180,34 @@ namespace Pather.Tasks {
 			return false;
 		}
 
-		public override Location GetLocation() {
-			if (location != null) return location;
+		public override Location GetLocation()
+		{
+			if (location != null)
+				return location;
 			return null;
 		}
 
-		GNode FindMailbox() {
+        private int GetBlacklistTime()
+        {
+            Value v = nodetask.GetValueOfId("BlacklistTime");
+            if (v == null)
+                return 300;
+            int t = v.GetIntValue();
+            if (t == 0)
+                t = 300;
+            return t;
+        }
+
+		GNode FindMailbox()
+		{
 			// Find mailbox
 			GNode[] nodes = GObjectList.GetNodes();
-			foreach (GNode node in nodes) {
-				if (node.IsMailBox) {
-					if (mailbox == null || node.DistanceToSelf < mailbox.DistanceToSelf) {
+			foreach (GNode node in nodes)
+			{
+				if (node.IsMailBox)
+				{
+					if (mailbox == null || node.DistanceToSelf < mailbox.DistanceToSelf)
+					{
 						mailbox = node;
 					}
 				}
@@ -152,45 +215,65 @@ namespace Pather.Tasks {
 			return mailbox;
 		}
 
-		public override bool WantToDoSomething() {
-			if (location == null) return false;
-			//bool blacklisted = mailbox != null && ppather.IsBlacklisted(mailbox.GUID);
-			return (NeedMail() && GetFreeBagslots() < GetMinFreeBagslots());
+		public override bool WantToDoSomething()
+		{
+			if (location == null)
+				return false;
+            Location l = GetLocation();
+            bool close = l.GetDistanceTo(new Location(GContext.Main.Me.Location)) < 50.0;
+            if (mailbox != null)
+            {
+                close = close && !ppather.IsBlacklisted(mailbox.GUID);
+            }
+            return (NeedMail() && ((GetFreeBagslots() < GetMinFreeBagslots()) || close));
 		}
 
 		private ActivityWalkTo approachMailbox;
 		private ActivityWalkTo walkToLocation;
 		private ActivityMailItems mailItems;
 
-		public override Activity GetActivity() {
+		public override Activity GetActivity()
+		{
 			mailbox = FindMailbox();
-			if (mailbox == null) {
+			if (mailbox == null)
+			{
 				if (walkToLocation == null)
 					walkToLocation = new ActivityWalkTo(this, location, 2f, UseMount);
 				return walkToLocation;
-			} else {
-				if (mailbox.DistanceToSelf < 5.0) {
-					if (mailItems == null) {
+			}
+			else
+			{
+				if (mailbox.DistanceToSelf < 5.0)
+				{
+					if (mailItems == null)
+					{
 						mailItems = new ActivityMailItems(this,
 														  mailbox,
 														  GetRecipient(),
 														  GetItems(),
 														  GetProtectedItems(),
 														  GetFullStacksOnly(),
+                                                          GetMailWhites(),
 														  GetMailGreens(),
 														  GetMailBlues(),
 														  GetMailEpics()
 														  );
 					}
 					return mailItems;
-				} else if (approachMailbox == null)
+				}
+				else if (approachMailbox == null)
 					approachMailbox = new ActivityWalkTo(this, new Location(mailbox.Location), 2f, UseMount);
 				return approachMailbox;
 			}
 		}
 
-		public override bool ActivityDone(Activity task) {
-			if (task == mailItems) return true;
+		public override bool ActivityDone(Activity task)
+		{
+            if (task == mailItems)
+            {
+                ppather.Blacklist(mailbox.GUID, GetBlacklistTime());
+                return true;
+            }
 			return false;
 		}
 	}

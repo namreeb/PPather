@@ -1,18 +1,18 @@
 ﻿/*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -103,7 +103,7 @@ namespace Pather.Tasks
 						node = n;
 						break;
 					}
-					
+
 				}
 			}
 			return node;
@@ -201,9 +201,10 @@ namespace Pather.Tasks
 				return true; // should be an item
 			}
 			Location mel = new Location(GContext.Main.Me.Location);
-			
+
 			float d = mel.GetDistanceTo(objl);
-			if (d < InteractDistance && Math.Abs(mel.Z - objl.Z) < 2.0) return true;
+			if (d < InteractDistance && Math.Abs(mel.Z - objl.Z) < 2.0)
+				return true;
 			return false;
 		}
 

@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 using System;
@@ -204,14 +204,14 @@ namespace Pather
 			if (t != null)
 			{
 				Task.State_e state = t.State;
-				if (state == Task.State_e.Idle)
+                if (state == Task.State_e.Idle)
 					n.BackColor = white;
-				else if (state == Task.State_e.Done)
-					n.BackColor = blue;
-				else if (state == Task.State_e.Active)
-					n.BackColor = green;
-				else if (state == Task.State_e.Want)
-					n.BackColor = yellow;
+                else if (state == Task.State_e.Done)
+                    n.BackColor = blue;
+                else if (state == Task.State_e.Active)
+                    n.BackColor = green;
+                else if (state == Task.State_e.Want)
+                    n.BackColor = yellow;
 
 			}
 
@@ -259,7 +259,8 @@ namespace Pather
 				if (target.IsMonster)
 				{
 					GMonster m = (GMonster)target;
-					if (m.IsElite) lvl += "elite";
+					if (m.IsElite)
+						lvl += "elite";
 				}
 				lbl_level.Text = lvl;
 				lbl_faction.Text = target.FactionID.ToString();
@@ -306,7 +307,8 @@ namespace Pather
 		{
 			TreeNode n = e.Node;
 			lb_params.Items.Clear();
-			if (n == null) return;
+			if (n == null)
+				return;
 			Task t = (Task)n.Tag;
 			if (t == null)
 			{
@@ -330,7 +332,8 @@ namespace Pather
 					{
 						Value v = tn.GetValueOfId(par);
 						string val = "undefined";
-						if (v != null) val = v.GetStringValue();
+						if (v != null)
+							val = v.GetStringValue();
 						lb_params.Items.Add(par + " = " + val);
 					}
 
@@ -402,18 +405,27 @@ namespace Pather
 
 			switch (s)
 			{
-				case "": break;
-				case "UI": Functions.dumpUi(); break;
-				case "ItemCount": Functions.dumpItemCount(); break;
-				default: Functions.dumpGObjects(s); break;
+				case "":
+					break;
+				case "UI":
+					Functions.dumpUi();
+					break;
+				case "ItemCount":
+					Functions.dumpItemCount();
+					break;
+				default:
+					Functions.dumpGObjects(s);
+					break;
 			}
 		}
 		#endregion
 
 		private void nicon_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
-			if (this.Visible) this.Activate();
-			else this.Show();
+			if (this.Visible)
+				this.Activate();
+			else
+				this.Show();
 		}
 
 		// copy the label's text to the clipboard
@@ -753,14 +765,14 @@ namespace Pather
 			this.dumpCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.dumpCombo.FormattingEnabled = true;
 			this.dumpCombo.Items.AddRange(new object[] {
-			"UI",
-			"ItemCount",
-			"GetItems",
-			"GetMonsters",
-			"GetNodes",
-			"GetObjects",
-			"GetPlayers",
-			"GetUnits"});
+            "UI",
+            "ItemCount",
+            "GetItems",
+            "GetMonsters",
+            "GetNodes",
+            "GetObjects",
+            "GetPlayers",
+            "GetUnits"});
 			this.dumpCombo.Location = new System.Drawing.Point(97, 199);
 			this.dumpCombo.Margin = new System.Windows.Forms.Padding(2);
 			this.dumpCombo.Name = "dumpCombo";
@@ -879,6 +891,7 @@ namespace Pather
 			this.settings_scroll_pannel.Name = "settings_scroll_pannel";
 			this.settings_scroll_pannel.Size = new System.Drawing.Size(353, 190);
 			this.settings_scroll_pannel.TabIndex = 53;
+			this.settings_scroll_pannel.Paint += new System.Windows.Forms.PaintEventHandler(this.settings_scroll_pannel_Paint);
 			// 
 			// txt_setting_stoplevel
 			// 
@@ -972,9 +985,9 @@ namespace Pather
 			this.cb_setting_usemount.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cb_setting_usemount.FormattingEnabled = true;
 			this.cb_setting_usemount.Items.AddRange(new object[] {
-			"Always Mount",
-			"Never Mount",
-			"Let Task Decide"});
+            "Always Mount",
+            "Never Mount",
+            "Let Task Decide"});
 			this.cb_setting_usemount.Location = new System.Drawing.Point(67, 39);
 			this.cb_setting_usemount.Margin = new System.Windows.Forms.Padding(2);
 			this.cb_setting_usemount.Name = "cb_setting_usemount";
@@ -1608,9 +1621,9 @@ namespace Pather
 			this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboBox1.FormattingEnabled = true;
 			this.comboBox1.Items.AddRange(new object[] {
-			"Always Mount",
-			"Never Mount",
-			"Let Task Decide"});
+            "Always Mount",
+            "Never Mount",
+            "Let Task Decide"});
 			this.comboBox1.Location = new System.Drawing.Point(70, 53);
 			this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
 			this.comboBox1.Name = "comboBox1";
@@ -1741,9 +1754,9 @@ namespace Pather
 			this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboBox2.FormattingEnabled = true;
 			this.comboBox2.Items.AddRange(new object[] {
-			"Always Mount",
-			"Never Mount",
-			"Let Task Decide"});
+            "Always Mount",
+            "Never Mount",
+            "Let Task Decide"});
 			this.comboBox2.Location = new System.Drawing.Point(70, 53);
 			this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
 			this.comboBox2.Name = "comboBox2";
@@ -1783,14 +1796,14 @@ namespace Pather
 			// 
 			// textBox9
 			// 
-			this.textBox9.ForeColor = System.Drawing.SystemColors.WindowText;
-			this.textBox9.Location = new System.Drawing.Point(5, 297);
-			this.textBox9.MaxLength = 147483647;
+			this.textBox9.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.textBox9.Location = new System.Drawing.Point(6, 297);
+			this.textBox9.MaxLength = 532767;
 			this.textBox9.Multiline = true;
 			this.textBox9.Name = "textBox9";
 			this.textBox9.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.textBox9.Size = new System.Drawing.Size(366, 234);
-			this.textBox9.TabIndex = 42;
+			this.textBox9.TabIndex = 38;
 			// 
 			// PatherForm
 			// 
@@ -1902,14 +1915,14 @@ namespace Pather
 					break;
 				case MessageType.Info:
 					message = message.Remove(0, 6);
-				   // richTextBox1.SelectionColor = Color.SteelBlue;
-				   // textBox9.ForeColor = System.Drawing.Color.SteelBlue;
+					// richTextBox1.SelectionColor = Color.SteelBlue;
+					// textBox9.ForeColor = System.Drawing.Color.SteelBlue;
 					break;
 				case MessageType.Good:
 					message = message.Remove(0, 6);
-				   // richTextBox1.SelectionColor = Color.ForestGreen;
-				   // textBox9.ForeColor = System.Drawing.Color.ForestGreen;
-					
+					// richTextBox1.SelectionColor = Color.ForestGreen;
+					// textBox9.ForeColor = System.Drawing.Color.ForestGreen;
+
 					break;
 				default:
 					// richTextBox1.SelectionColor = Color.Black;
@@ -1918,12 +1931,15 @@ namespace Pather
 			}
 			//richTextBox1.AppendText(" " + message);
 			//richTextBox1.ScrollToCaret();
+            if (textBox9.TextLength > textBox9.MaxLength)
+            {
+                textBox9.Clear();
+            }
 			textBox9.AppendText(" " + message);
 			textBox9.ScrollToCaret();
 
-			
-		}
 
+		}
 		public void WriteLine(string message)
 		{
 			this.Write(message + Environment.NewLine);
@@ -1931,6 +1947,9 @@ namespace Pather
 
 		#endregion
 
+		private void settings_scroll_pannel_Paint(object sender, PaintEventArgs e)
+		{
 
+		}
 	}
 }

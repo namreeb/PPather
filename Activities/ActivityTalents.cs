@@ -16,8 +16,8 @@ namespace Pather.Activities
 	{
 		private int tab;
 		private int spot;
-	
-		public GTalentLocation ( int tab, int spot )
+
+		public GTalentLocation(int tab, int spot)
 		{
 			this.tab = tab;
 			this.spot = spot;
@@ -57,8 +57,8 @@ namespace Pather.Activities
 
 		private GTalentLocation GetNextTalent()
 		{
-			string[] currentTalents = TalentFrame.GetTalentString();	
-			
+			string[] currentTalents = TalentFrame.GetTalentString();
+
 			foreach (string build in this.talents)
 			{
 				int offset = 0;
@@ -75,7 +75,7 @@ namespace Pather.Activities
 						w = int.Parse(build.Substring(offset + i, 1));
 						h = int.Parse(currentTalents[t].Substring(i, 1));
 
-						if ( h < w )
+						if (h < w)
 						{
 							return new GTalentLocation(t + 1, i + 1);
 						}

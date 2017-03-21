@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -27,8 +27,10 @@ using Pather.Activities;
 using Pather.Graph;
 using Pather.Parser;
 
-namespace Pather.Tasks {
-	public abstract class ParserTask : Task {
+namespace Pather.Tasks
+{
+	public abstract class ParserTask : Task
+	{
 		// this stuff dynamically gets a task object using reflection
 		// so that we don't have to hard code in the different task
 		// types in PPather.CreateTaskFromNode()
@@ -36,14 +38,16 @@ namespace Pather.Tasks {
 		// public just for debug, SHOULD BE PRIVATE
 		public static Dictionary<string, Type> registeredTasks = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
 
-		public static void RegisterTask(string taskName, Type classType) {
+		public static void RegisterTask(string taskName, Type classType)
+		{
 			registeredTasks[taskName] = classType;
 
 			//		PPather.WriteLine("Registered task: " + taskName + " -> " + classType);
 			//		MessageBox.Show("Registered task: " + taskName + " -> " + classType.FullName);
 		}
 
-		public static ParserTask GetTask(PPather ppather, NodeTask node) {
+		public static ParserTask GetTask(PPather ppather, NodeTask node)
+		{
 			//		string s = "";
 
 			//		foreach (string key in registeredTasks.Keys)
@@ -51,7 +55,8 @@ namespace Pather.Tasks {
 
 			//		PPather.WriteLine("Types: " + s);
 
-			if (!registeredTasks.ContainsKey(node.type)) {
+			if (!registeredTasks.ContainsKey(node.type))
+			{
 				PPather.WriteLine("No registered task for " + node.type);
 				return null;
 			}
@@ -62,15 +67,19 @@ namespace Pather.Tasks {
 			ConstructorInfo ci = null;
 			Object o = null;
 
-			try {
+			try
+			{
 				ci = registeredTasks[node.type].GetConstructor(new Type[] { ppather.GetType(), node.GetType() });
 				o = ci.Invoke(new object[] { ppather, node });
-			} catch (Exception e) {
+			}
+			catch (Exception e)
+			{
 				// an exception here is fatal, popup a dialog
 				// to give some feedback and rethrow the error
 				string s = "Error instantiating \"" + node.type + "\" task\n\n" + e.GetType().FullName + "\n" + e.Message;
 
-				if (null != e.InnerException) {
+				if (null != e.InnerException)
+				{
 					s += "\n\nInner exception:" + e.InnerException.GetType().FullName + "\n" + e.InnerException.Message;
 				}
 
@@ -78,7 +87,8 @@ namespace Pather.Tasks {
 				throw e;
 			}
 
-			if (null == o) {
+			if (null == o)
+			{
 				PPather.WriteLine("Created null");
 			}
 
@@ -88,15 +98,20 @@ namespace Pather.Tasks {
 
 		public NodeTask nodetask;
 		public ParserTask(PPather pather, NodeTask nodetask)
-			: base(pather) {
+			: base(pather)
+		{
 			this.nodetask = nodetask;
 		}
 
-		public override bool IsParserTask() { return true; }
+
+		public override bool IsParserTask()
+		{
+			return true;
+		}
 
 		public virtual void Unload()
 		{
-			
+
 			/*
 			if (this.IsFinished() && !this.isActive)
 			{

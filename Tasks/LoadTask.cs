@@ -1,4 +1,4 @@
-/*
+﻿/*
   This file is part of PPather.
 
 	PPather is free software: you can redistribute it and/or modify
@@ -28,63 +28,57 @@ using Pather.Parser;
 
 namespace Pather.Tasks
 {
-	public class RepeatTask : ParserTask
+	class LoadTask : ActivityFreeTask
 	{
-		public const string ParserKeyword = "Rep,Repeatable,Repeat";
+		bool done = false;
+		public string File;
 
-		Task child;
-		public RepeatTask(PPather pather, NodeTask node)
+		public LoadTask(PPather pather, NodeTask node)
 			: base(pather, node)
 		{
-			child = pather.CreateTaskFromNode(node.subTasks[0], this);
+			File = node.GetValueOfId("File").GetStringValue();
 		}
 
 		public override void GetParams(List<string> l)
 		{
+			l.Add("File");
 			base.GetParams(l);
 		}
 
-		public override void Restart()
+		public override string ToString()
 		{
-			child.Restart();
-		}
-
-		public override bool IsFinished()
-		{
-			return false; // never finished!
-		}
-
-		public override Task[] GetChildren()
-		{
-			return new Task[] { child };
-		}
-
-		public override bool WantToDoSomething()
-		{
-			if (child != null)
-			{
-				if (child.IsFinished())
-				{
-					child.Restart();
-				}
-				return child.WantToDoSomething();
-			}
-			return false;
+			return "Load";
 		}
 
 		public override Location GetLocation()
 		{
-			return child.GetLocation();
+			return null;
 		}
 
-		public override Activity GetActivity()
+		public override void Restart()
 		{
-			return child.GetActivity();
+			done = false;
+		}
+		public override bool IsFinished()
+		{
+			return done;
+		}
+
+		public override bool WantToDoSomething()
+		{
+			return !done;
+		}
+
+		public override bool DoActivity()
+		{
+			// Do the stuff here
+			return true; // done
 		}
 
 		public override bool ActivityDone(Activity task)
 		{
-			return child.ActivityDone(task);
+			done = true;
+			return true;
 		}
 	}
 }

@@ -32,6 +32,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -87,6 +88,7 @@
     <Compile Include="Activities\ActivityTrain.cs" />
     <Compile Include="Activities\ActivityWait.cs" />
     <Compile Include="Activities\ActivityWalkTo.cs" />
+    <Compile Include="Activities\ActivityInteract.cs" />
     <Compile Include="Functions.cs" />
     <Compile Include="Graph\GraphChunk.cs" />
     <Compile Include="Graph\ILocationHeuristics.cs" />
@@ -140,9 +142,6 @@
     <Compile Include="Parser\TaskParser.cs" />
     <Compile Include="Parser\Token.cs" />
     <Compile Include="Parser\Tokenizer.cs" />
-    <Compile Include="PatherForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="PathObject.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -153,17 +152,24 @@
     <Compile Include="Parser\Value.cs" />
     <Compile Include="Tasks\AssistTask.cs" />
     <Compile Include="Tasks\AvoidPlayersTask.cs" />
+    <Compile Include="Tasks\InteractTask.cs" />
+    <Compile Include="Tasks\SetStateTask.cs" />
     <Compile Include="Tasks\GroupFollowTask.cs" />
     <Compile Include="Tasks\LearnFPTask.cs" />
+    <Compile Include="Tasks\LoadTask.cs" />
     <Compile Include="Tasks\LogTask.cs" />
     <Compile Include="Tasks\PlaceSpellTask.cs" />
     <Compile Include="Tasks\QuestInteractTask.cs" />
+    <Compile Include="Tasks\RepeatTask.cs" />
     <Compile Include="Tasks\SetHomeTask.cs" />
     <Compile Include="Tasks\StringTask.cs" />
     <Compile Include="Helpers\Buff.cs" />
     <Compile Include="Helpers\Inventory.cs" />
     <Compile Include="Helpers\Mount.cs" />
     <Compile Include="Moving.cs" />
+    <Compile Include="PatherForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="PPather.cs">
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -193,6 +199,7 @@
     <Compile Include="Tasks\Task.cs" />
     <Compile Include="Tasks\TaxiTask.cs" />
     <Compile Include="Tasks\TrainTask.cs" />
+    <Compile Include="Tasks\UnloadTask.cs" />
     <Compile Include="Tasks\UntilTask.cs" />
     <Compile Include="Tasks\UseItemTask.cs" />
     <Compile Include="Tasks\VendorTask.cs" />
@@ -209,8 +216,8 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="PatherForm.resx">
-      <DependentUpon>PatherForm.cs</DependentUpon>
       <SubType>Designer</SubType>
+      <DependentUpon>PatherForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>

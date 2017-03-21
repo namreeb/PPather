@@ -1,18 +1,18 @@
 /*
   This file is part of PPather.
 
-	PPather is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    PPather is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	PPather is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
+    PPather is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-	You should have received a copy of the GNU Lesser General Public License
-	along with PPather.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with PPather.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
@@ -29,7 +29,8 @@ using Pather.Parser;
 using Pather.Helpers;
 using Pather.Helpers.UI;
 
-namespace Pather.Activities {
+namespace Pather.Activities
+{
 	/*
 	  hmm dialog navigation: 
    
@@ -64,18 +65,20 @@ namespace Pather.Activities {
 		public override bool Do()
 		{
 			Helpers.Mount.Dismount();
-			if (ppather.IsQuestAccepted(QuestID)) return true;
+
+			if (ppather.IsQuestAccepted(QuestID))
+				return true;
 
 			if (pathObject != null)
 			{
 				if (pathObject.isNode() || pathObject.isUnit())
 					ppather.Face(pathObject);
 				Functions.Interact(pathObject);
-
 			}
 
 			// For quest pickup on some items
-			while (GPlayerSelf.Me.IsCasting) Thread.Sleep(250);
+			while (GPlayerSelf.Me.IsCasting)
+				Thread.Sleep(250);
 			Thread.Sleep(1000); // In case of lag
 
 			if (GossipFrame.IsVisible())

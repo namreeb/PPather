@@ -77,7 +77,7 @@ namespace Pather.Parser
 			return new Value(TargInfo);
 		}
 
-		public static Value MyCoppers()
+		public static Value MyMoney()
 		{
 			return new Value(GPlayerSelf.Me.Coinage);
 		}
@@ -166,9 +166,30 @@ namespace Pather.Parser
 					GContainer bag = (GContainer)GObjectList.FindObject(AllBags[bagNr - 1]);
 					if (bag != null)
 					{
-						Contents = bag.BagContents;
-						SlotCount = bag.SlotCount;
-					}
+                        // The slots in quivers and ammo pouches shouldn't count.
+                        // Apparently, there's no way to determine what kind of container
+                        // we're dealing with so I just added all the containers in the game
+                        // that hold arrows or ammo as of 2.4.2.
+                        if (bag.ItemDefID != 34106 && bag.ItemDefID != 34099 &&
+                            bag.ItemDefID != 29118 && bag.ItemDefID != 19320 && bag.ItemDefID != 8218 &&
+                            bag.ItemDefID != 2663 && bag.ItemDefID != 7372 && bag.ItemDefID != 3604 &&
+                            bag.ItemDefID != 3574 && bag.ItemDefID != 11363 && bag.ItemDefID != 5441 &&
+                            bag.ItemDefID != 7279 && bag.ItemDefID != 2102 && bag.ItemDefID != 34105 &&
+                            bag.ItemDefID != 34100 && bag.ItemDefID != 18714 && bag.ItemDefID != 29143 &&
+                            bag.ItemDefID != 29144 && bag.ItemDefID != 19319 && bag.ItemDefID != 8217 &&
+                            bag.ItemDefID != 2662 && bag.ItemDefID != 7371 && bag.ItemDefID != 3605 &&
+                            bag.ItemDefID != 11362 && bag.ItemDefID != 3573 && bag.ItemDefID != 5439 &&
+                            bag.ItemDefID != 7278 && bag.ItemDefID != 2101)
+                        {
+                            SlotCount = bag.SlotCount;
+                            Contents = bag.BagContents;
+                        }
+                        else
+                        {
+                            SlotCount = 0;
+                            Contents = null;
+                        }
+    				}
 					else
 					{
 						SlotCount = 0;
@@ -197,7 +218,8 @@ namespace Pather.Parser
 				TrainLevel = Int32.Parse(TrainLevelS);
 			int mylevel = GContext.Main.Me.Level;
 
-			if (TrainLevel == mylevel) ret = true;
+			if (TrainLevel == mylevel)
+				ret = true;
 
 			return new Value(ret ? 1 : 0);
 		}
@@ -213,7 +235,8 @@ namespace Pather.Parser
 				if (item.DurabilityMax > 0)
 				{
 					float dur = (float)item.Durability;
-					if (dur < worst) worst = dur;
+					if (dur < worst)
+						worst = dur;
 				}
 			}
 
